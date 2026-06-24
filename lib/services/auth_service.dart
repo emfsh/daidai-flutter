@@ -46,6 +46,7 @@ class AuthService extends ChangeNotifier {
   String? _error;
   List<SavedAccount> _savedAccounts = [];
   bool _autoLogin = false;
+  bool _manualLogoutInSession = false;
   String? _lastServerUrl;
   String? _lastUsername;
 
@@ -56,6 +57,7 @@ class AuthService extends ChangeNotifier {
   ApiService get apiService => _apiService;
   List<SavedAccount> get savedAccounts => _savedAccounts;
   bool get autoLogin => _autoLogin;
+  bool get manualLogoutInSession => _manualLogoutInSession;
   String? get lastServerUrl => _lastServerUrl;
   String? get lastUsername => _lastUsername;
 
@@ -141,6 +143,7 @@ class AuthService extends ChangeNotifier {
 
         _isAuthenticated = true;
         _username = username;
+        _manualLogoutInSession = false;
         notifyListeners();
         return true;
       } else {
@@ -186,6 +189,7 @@ class AuthService extends ChangeNotifier {
 
         _isAuthenticated = true;
         _username = 'Client:$clientId';
+        _manualLogoutInSession = false;
         notifyListeners();
         return true;
       } else {
@@ -227,6 +231,7 @@ class AuthService extends ChangeNotifier {
 
     _isAuthenticated = true;
     _username = account.username;
+    _manualLogoutInSession = false;
     notifyListeners();
   }
 
@@ -246,6 +251,7 @@ class AuthService extends ChangeNotifier {
 
     _isAuthenticated = false;
     _username = null;
+    _manualLogoutInSession = true;
     notifyListeners();
   }
 

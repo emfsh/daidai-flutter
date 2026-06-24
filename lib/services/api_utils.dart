@@ -34,3 +34,15 @@ bool _requiresV1Api(String path) {
       path.contains('/stream') ||
       path.contains('/log-stream');
 }
+
+bool shouldAttemptAutoLogin({
+  required bool autoLoginEnabled,
+  required bool manualLogoutInSession,
+  required String username,
+  required String password,
+}) {
+  return autoLoginEnabled &&
+      !manualLogoutInSession &&
+      username.trim().isNotEmpty &&
+      password.isNotEmpty;
+}

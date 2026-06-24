@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../services/auth_service.dart';
+import '../services/api_utils.dart';
 import '../theme/miuix_theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -57,7 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     // Auto login if enabled and credentials exist
-    if (_autoLogin && _usernameController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+    if (shouldAttemptAutoLogin(
+      autoLoginEnabled: _autoLogin,
+      manualLogoutInSession: authService.manualLogoutInSession,
+      username: _usernameController.text,
+      password: _passwordController.text,
+    )) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _login());
     }
   }

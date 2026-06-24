@@ -54,4 +54,42 @@ void main() {
       );
     });
   });
+
+  group('shouldAttemptAutoLogin', () {
+    test('allows auto login when preference and credentials are present', () {
+      expect(
+        shouldAttemptAutoLogin(
+          autoLoginEnabled: true,
+          manualLogoutInSession: false,
+          username: 'admin',
+          password: 'password',
+        ),
+        isTrue,
+      );
+    });
+
+    test('blocks auto login after manual logout in current session', () {
+      expect(
+        shouldAttemptAutoLogin(
+          autoLoginEnabled: true,
+          manualLogoutInSession: true,
+          username: 'admin',
+          password: 'password',
+        ),
+        isFalse,
+      );
+    });
+
+    test('blocks auto login without saved credentials', () {
+      expect(
+        shouldAttemptAutoLogin(
+          autoLoginEnabled: true,
+          manualLogoutInSession: false,
+          username: 'admin',
+          password: '',
+        ),
+        isFalse,
+      );
+    });
+  });
 }
