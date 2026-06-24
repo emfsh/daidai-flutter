@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:convert';
-import '../main.dart';
+import '../app.dart';
 import '../services/auth_service.dart';
 import '../services/log_service.dart';
 import '../theme/miuix_theme.dart';
