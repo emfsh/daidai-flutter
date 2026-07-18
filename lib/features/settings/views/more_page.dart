@@ -101,6 +101,7 @@ class _MorePageState extends ConsumerState<MorePage> {
                 border: Border.all(
                   color: isLight ? AppColors.miuixCardBorder : AppColors.slate800,
                   width: 0.5,
+                ),
               ),
               child: Column(
                 children: [
@@ -610,6 +611,7 @@ class _SettingsItem extends StatelessWidget {
           border: Border.all(
             color: isLight ? AppColors.miuixCardBorder : AppColors.slate800,
             width: 0.5,
+          ),
         ),
         child: Row(
           children: [
