@@ -12,7 +12,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppUserAgent.initialize();
 
-  await LocalNotificationService().initialize();
+  try {
+    await LocalNotificationService().initialize();
+  } catch (_) {}
 
   // 恢复服务器地址
   final serverUrl = await SecureStorage.getServerUrl();
