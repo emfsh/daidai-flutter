@@ -36,7 +36,7 @@ val hasReleaseSigning =
 
 android {
     namespace = "com.daidai.daidai_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
