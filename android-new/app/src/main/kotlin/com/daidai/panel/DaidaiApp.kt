@@ -23,6 +23,7 @@ import com.daidai.panel.ui.screens.tasks.TaskFormScreen
 import com.daidai.panel.ui.screens.users.UserListScreen
 import com.daidai.panel.viewmodel.AuthViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DaidaiApp() {
     val navController = rememberNavController()
