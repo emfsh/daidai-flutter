@@ -1,43 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import '../../features/dashboard/views/dashboard_page.dart';
-import '../../features/login/views/login_page.dart';
 import '../auth/auth_provider.dart';
+import '../../screens/login_screen.dart';
+import '../../screens/home_screen.dart';
+import '../../screens/dashboard_screen.dart';
+import '../../screens/tasks_screen.dart';
+import '../../screens/envs_screen.dart';
+import '../../screens/dependencies_screen.dart';
+import '../../screens/scripts_screen.dart';
+import '../../screens/logs_screen.dart';
+import '../../screens/subscriptions_screen.dart';
+import '../../screens/security_screen.dart';
+import '../../screens/settings_screen.dart';
+import '../../screens/open_api_screen.dart';
+import '../../screens/backup_screen.dart';
 
-final rootNavigatorKey = GlobalKey<NavigatorState>();
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-GoRouter buildAppRouter(AuthProvider authProvider) {
+/// 将 auth status 变化转为 Listenable，供 GoRouter.refreshListenable 使用
+class _AuthNotifierBridge extends ChangeNotifier {
+  _AuthNotifierBridge(Ref ref) {
+    ref.listen<AuthStatus>(
+      authProvider.select((s) => s.status),
+      (previous, next) => notifyListeners(),
+    );
+  }
+}
+
+final _authNotifierProvider = Provider<_AuthNotifierBridge>((ref) {
+  return _AuthNotifierBridge(ref);
+});
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final refreshNotifier = ref.watch(_authNotifierProvider);
+
   return GoRouter(
-    navigatorKey: rootNavigatorKey,
+    navigatorKey: _rootNavigatorKey,
     initialLocation: '/login',
-    refreshListenable: authProvider,
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
-      final isAuthenticated = authProvider.status == AuthStatus.authenticated;
-      final isInitializing = authProvider.status == AuthStatus.unknown;
+      final authState = ref.read(authProvider);
+      final isAuth = authState.status == AuthStatus.authenticated;
+      final isUnknown = authState.status == AuthStatus.unknown;
       final isLoginRoute = state.matchedLocation == '/login';
 
-      if (isInitializing) return null;
-      if (isAuthenticated && isLoginRoute) return '/dashboard';
-      if (!isAuthenticated && !isLoginRoute) return '/login';
+      if (isUnknown) return null;
+      if (!isAuth && !isLoginRoute) return '/login';
+      if (isAuth && isLoginRoute) return '/home';
       return null;
     },
     routes: [
-      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
-      GoRoute(path: '/dashboard', builder: (_, __) => const DashboardPage()),
+      GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+      GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
+      GoRoute(path: '/dashboard', builder: (_, __) => const DashboardScreen()),
+      GoRoute(path: '/tasks', builder: (_, __) => const TasksScreen()),
+      GoRoute(path: '/envs', builder: (_, __) => const EnvsScreen()),
+      GoRoute(path: '/deps', builder: (_, __) => const DependenciesScreen()),
+      GoRoute(path: '/scripts', builder: (_, __) => const ScriptsScreen()),
+      GoRoute(path: '/logs', builder: (_, __) => const LogsScreen()),
+      GoRoute(path: '/subscriptions', builder: (_, __) => const SubscriptionsScreen()),
+      GoRoute(path: '/security', builder: (_, __) => const SecurityScreen()),
+      GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/open-api', builder: (_, __) => const OpenApiScreen()),
+      GoRoute(path: '/backup', builder: (_, __) => const BackupScreen()),
     ],
   );
-}
-
-class AppRouterProvider extends StatelessWidget {
-  const AppRouterProvider({super.key, required this.builder});
-
-  final Widget Function(BuildContext context, GoRouter router) builder;
-
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    final router = buildAppRouter(authProvider);
-    return builder(context, router);
-  }
-}
+});
