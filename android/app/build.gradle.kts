@@ -52,7 +52,7 @@ android {
 
     defaultConfig {
         applicationId = "com.daidai.daidai_app"
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -77,6 +77,10 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
         }
+    }
+
+    lint {
+        disable.add("MissingVersion")
     }
 }
 
