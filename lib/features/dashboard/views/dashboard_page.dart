@@ -176,11 +176,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 ],
               )
             : ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.top + 16,
-                  left: 20,
-                  right: 20,
-                  bottom: 100,
+                  left: 16,
+                  right: 16,
+                  bottom: 110,
                 ),
                 children: [
                   // Header
@@ -411,13 +412,23 @@ class _ServerInfoCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isLight
-              ? [Colors.white, AppColors.slate50]
+              ? [AppColors.miuixCard, AppColors.slate50]
               : [AppColors.slate900, AppColors.slate800],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isLight ? AppColors.slate200 : AppColors.slate800,
+          color: isLight ? AppColors.miuixCardBorder : AppColors.slate800,
+          width: 0.5,
         ),
+        boxShadow: isLight
+            ? [
+                BoxShadow(
+                  color: AppColors.slate900.withAlpha(8),
+                  blurRadius: 12,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
       ),
       child: Stack(
         children: [
@@ -540,11 +551,21 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isLight ? Colors.white : AppColors.slate900,
-        borderRadius: BorderRadius.circular(16),
+        color: isLight ? AppColors.miuixCard : AppColors.slate900,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isLight ? AppColors.slate200 : AppColors.slate800,
+          color: isLight ? AppColors.miuixCardBorder : AppColors.slate800,
+          width: 0.5,
         ),
+        boxShadow: isLight
+            ? [
+                BoxShadow(
+                  color: AppColors.slate900.withAlpha(6),
+                  blurRadius: 8,
+                  offset: const Offset(0, 1),
+                ),
+              ]
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -637,11 +658,21 @@ class _QuickAction extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: isLight ? Colors.white : AppColors.slate900,
-            borderRadius: BorderRadius.circular(12),
+            color: isLight ? AppColors.miuixCard : AppColors.slate900,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isLight ? AppColors.slate200 : AppColors.slate800,
+              color: isLight ? AppColors.miuixCardBorder : AppColors.slate800,
+              width: 0.5,
             ),
+            boxShadow: isLight
+                ? [
+                    BoxShadow(
+                      color: AppColors.slate900.withAlpha(6),
+                      blurRadius: 6,
+                      offset: const Offset(0, 1),
+                    ),
+                  ]
+                : null,
           ),
           child: Column(
             children: [

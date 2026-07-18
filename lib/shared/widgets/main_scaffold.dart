@@ -61,66 +61,84 @@ class _MainScaffoldState extends State<MainScaffold> {
       child: Scaffold(
         body: widget.child,
         extendBody: true,
-        bottomNavigationBar: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: isLight
-                    ? Colors.white.withAlpha(230)
-                    : AppColors.slate900.withAlpha(230),
-                border: Border(
-                  top: BorderSide(
-                    color: isLight ? AppColors.slate200 : AppColors.slate800,
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.only(
+            bottom: 12,
+            left: 16,
+            right: 16,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isLight
+                      ? Colors.white.withAlpha(180)
+                      : AppColors.slate900.withAlpha(180),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isLight
+                        ? Colors.white.withAlpha(160)
+                        : AppColors.slate700.withAlpha(120),
                     width: 0.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isLight
+                          ? AppColors.slate900.withAlpha(25)
+                          : Colors.black.withAlpha(80),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 6,
-                  ),
-                  child: Row(
-                    children: [
-                      _NavItem(
-                        icon: Icons.space_dashboard_outlined,
-                        activeIcon: Icons.space_dashboard,
-                        label: '主页',
-                        isActive: idx == 0,
-                        onTap: () => context.go('/dashboard'),
-                      ),
-                      _NavItem(
-                        icon: Icons.schedule_outlined,
-                        activeIcon: Icons.schedule,
-                        label: '任务',
-                        isActive: idx == 1,
-                        onTap: () => context.go('/tasks'),
-                      ),
-                      _NavItem(
-                        icon: Icons.terminal_outlined,
-                        activeIcon: Icons.terminal,
-                        label: '日志',
-                        isActive: idx == 2,
-                        onTap: () => context.go('/logs'),
-                      ),
-                      _NavItem(
-                        icon: Icons.key_outlined,
-                        activeIcon: Icons.key,
-                        label: '变量',
-                        isActive: idx == 3,
-                        onTap: () => context.go('/envs'),
-                      ),
-                      _NavItem(
-                        icon: Icons.menu_outlined,
-                        activeIcon: Icons.menu,
-                        label: '更多',
-                        isActive: idx == 4,
-                        onTap: () => context.go('/more'),
-                      ),
-                    ],
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 6,
+                    ),
+                    child: Row(
+                      children: [
+                        _NavItem(
+                          icon: Icons.space_dashboard_outlined,
+                          activeIcon: Icons.space_dashboard,
+                          label: '主页',
+                          isActive: idx == 0,
+                          onTap: () => context.go('/dashboard'),
+                        ),
+                        _NavItem(
+                          icon: Icons.schedule_outlined,
+                          activeIcon: Icons.schedule,
+                          label: '任务',
+                          isActive: idx == 1,
+                          onTap: () => context.go('/tasks'),
+                        ),
+                        _NavItem(
+                          icon: Icons.terminal_outlined,
+                          activeIcon: Icons.terminal,
+                          label: '日志',
+                          isActive: idx == 2,
+                          onTap: () => context.go('/logs'),
+                        ),
+                        _NavItem(
+                          icon: Icons.key_outlined,
+                          activeIcon: Icons.key,
+                          label: '变量',
+                          isActive: idx == 3,
+                          onTap: () => context.go('/envs'),
+                        ),
+                        _NavItem(
+                          icon: Icons.menu_outlined,
+                          activeIcon: Icons.menu,
+                          label: '更多',
+                          isActive: idx == 4,
+                          onTap: () => context.go('/more'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -149,35 +167,48 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive
-        ? AppColors.primary
-        : Theme.of(context).colorScheme.onSurfaceVariant;
+    final color = isActive ? AppColors.primary : AppColors.slate400;
+    final bgColor = isActive
+        ? AppColors.primary.withAlpha(20)
+        : Colors.transparent;
 
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(isActive ? activeIcon : icon, size: 22, color: color),
-            const SizedBox(height: 2),
-            SizedBox(
-              height: 12,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: color,
-                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(isActive ? activeIcon : icon, size: 22, color: color),
+                const SizedBox(height: 2),
+                SizedBox(
+                  height: 12,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: color,
+                        fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

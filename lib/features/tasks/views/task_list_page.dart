@@ -852,7 +852,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                     : ListView(
                         controller: _scrollController,
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
                         children: groupedTasks
                             .map((group) => _buildTaskGroup(group, isLight))
                             .toList(),
@@ -1207,7 +1207,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
         ),
         Expanded(
           child: ReorderableListView.builder(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
             itemCount: groups.length,
             onReorder: (oldIndex, newIndex) {
               setState(() {
@@ -1270,7 +1270,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
 
   Widget _buildTaskReorderView(List<Task> tasks, bool isLight) {
     return ReorderableListView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
       itemCount: tasks.length,
       onReorder: (oldIndex, newIndex) {
         // 只先调整本地顺序，等用户点击“完成”后再统一保存到后端，避免拖一下就请求多次。

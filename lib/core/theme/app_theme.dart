@@ -20,6 +20,16 @@ class AppColors {
   static const slate900 = Color(0xFF0F172A);
   static const slate950 = Color(0xFF020617);
 
+  // MIUIX 风格色板
+  static const miuixBg = Color(0xFFF2F2F7);
+  static const miuixCard = Color(0xFFFFFFFF);
+  static const miuixCardBorder = Color(0xFFE8E8ED);
+  static const miuixRed = Color(0xFFE5534B);
+  static const miuixGreen = Color(0xFF30A14E);
+  static const miuixBlue = Color(0xFF3B82F6);
+  static const miuixPurple = Color(0xFF8B5CF6);
+  static const miuixYellow = Color(0xFFD4A017);
+
   // 功能色
   static const blue500 = Color(0xFF3B82F6);
   static const blue600 = Color(0xFF2563EB);
@@ -81,13 +91,14 @@ class AppTheme {
 
   static ThemeData _buildTheme(ColorScheme cs) {
     final isLight = cs.brightness == Brightness.light;
-    final cardColor = isLight ? Colors.white : AppColors.slate900;
-    final borderColor = isLight ? AppColors.slate200 : AppColors.slate800;
+    final cardColor = isLight ? AppColors.miuixCard : AppColors.slate900;
+    final borderColor = isLight ? AppColors.miuixCardBorder : AppColors.slate800;
+    final scaffoldBg = isLight ? AppColors.miuixBg : AppColors.slate950;
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: cs,
-      scaffoldBackgroundColor: cs.surface,
+      scaffoldBackgroundColor: scaffoldBg,
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -104,8 +115,8 @@ class AppTheme {
         elevation: 0,
         color: cardColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: borderColor, width: 1),
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: borderColor, width: 0.5),
         ),
         margin: const EdgeInsets.only(bottom: 12),
       ),
@@ -222,9 +233,10 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: cardColor,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         actionsPadding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
       ),
+      dialogBackgroundColor: cardColor,
     );
   }
 

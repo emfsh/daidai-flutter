@@ -1137,7 +1137,7 @@ class _EnvListPageState extends ConsumerState<EnvListPage> {
                       )
                     : _sortMode
                     ? ReorderableListView.builder(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
                         itemCount: state.envs.length,
                         onReorder: (oldIndex, newIndex) {
                           final current = List<EnvVar>.from(state.envs);
@@ -1237,7 +1237,7 @@ class _EnvListPageState extends ConsumerState<EnvListPage> {
                         },
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
                         itemCount: state.envs.length,
                         itemBuilder: (_, i) {
                           final env = state.envs[i];

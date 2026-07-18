@@ -80,9 +80,9 @@ class _MorePageState extends ConsumerState<MorePage> {
       body: ListView(
         padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top + 16,
-          left: 20,
-          right: 20,
-          bottom: 100,
+          left: 16,
+          right: 16,
+          bottom: 110,
         ),
         children: [
           const Text(
@@ -96,11 +96,11 @@ class _MorePageState extends ConsumerState<MorePage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isLight ? Colors.white : AppColors.slate900,
-                borderRadius: BorderRadius.circular(16),
+                color: isLight ? AppColors.miuixCard : AppColors.slate900,
+                borderRadius: BorderRadius.circular(18),
                 border: Border.all(
-                  color: isLight ? AppColors.slate200 : AppColors.slate800,
-                ),
+                  color: isLight ? AppColors.miuixCardBorder : AppColors.slate800,
+                  width: 0.5,
               ),
               child: Column(
                 children: [
@@ -430,65 +430,121 @@ class _MorePageState extends ConsumerState<MorePage> {
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: const Text('关于'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withAlpha(20),
-                    borderRadius: BorderRadius.circular(12),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withAlpha(20),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.dashboard_customize_outlined,
+                      color: AppColors.primary,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.dashboard_customize_outlined,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        '呆呆面板',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '呆呆面板',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      FutureBuilder<PackageInfo>(
-                        future: packageInfoFuture,
-                        builder: (context, snapshot) {
-                          final info = snapshot.data;
-                          final versionLabel = info == null
-                              ? '版本 -'
-                              : '版本 ${info.version}${info.buildNumber.trim().isEmpty ? '' : '+${info.buildNumber}'}';
-                          return Text(
-                            versionLabel,
-                            style: const TextStyle(fontSize: 12),
-                          );
-                        },
-                      ),
-                    ],
+                        const SizedBox(height: 2),
+                        FutureBuilder<PackageInfo>(
+                          future: packageInfoFuture,
+                          builder: (context, snapshot) {
+                            final info = snapshot.data;
+                            final versionLabel = info == null
+                                ? '版本 -'
+                                : '版本 ${info.version}${info.buildNumber.trim().isEmpty ? '' : '+${info.buildNumber}'}';
+                            return Text(
+                              versionLabel,
+                              style: const TextStyle(fontSize: 12),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '轻量级定时任务管理平台',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: isLight ? AppColors.slate600 : AppColors.slate300,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isLight ? AppColors.slate50 : AppColors.slate900,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isLight ? AppColors.slate200 : AppColors.slate800,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Text(
-              '轻量级定时任务管理平台',
-              style: TextStyle(
-                fontSize: 13,
-                color: isLight ? AppColors.slate600 : AppColors.slate300,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '仓库信息',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: isLight ? AppColors.slate700 : AppColors.slate200,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _RepoInfoRow(
+                      label: '当前仓库',
+                      url: 'github.com/tall-1997/daidai-flutter',
+                      isLight: isLight,
+                      icon: Icons.folder_outlined,
+                    ),
+                    const SizedBox(height: 8),
+                    _RepoInfoRow(
+                      label: '上游仓库',
+                      url: 'github.com/linzixuanzz/Dumb-Panel-APP',
+                      isLight: isLight,
+                      icon: Icons.arrow_circle_up_outlined,
+                    ),
+                    const SizedBox(height: 8),
+                    _RepoInfoRow(
+                      label: '后端仓库',
+                      url: 'github.com/linzixuanzz/daidai-panel',
+                      isLight: isLight,
+                      icon: Icons.dns_outlined,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              Text(
+                '本应用基于上游项目二次开发，感谢开源社区贡献',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isLight ? AppColors.slate500 : AppColors.slate500,
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           SizedBox(
@@ -549,11 +605,11 @@ class _SettingsItem extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 6),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isLight ? Colors.white : AppColors.slate900,
-          borderRadius: BorderRadius.circular(12),
+          color: isLight ? AppColors.miuixCard : AppColors.slate900,
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isLight ? AppColors.slate200 : AppColors.slate800,
-          ),
+            color: isLight ? AppColors.miuixCardBorder : AppColors.slate800,
+            width: 0.5,
         ),
         child: Row(
           children: [
@@ -581,6 +637,60 @@ class _SettingsItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RepoInfoRow extends StatelessWidget {
+  final String label;
+  final String url;
+  final bool isLight;
+  final IconData icon;
+
+  const _RepoInfoRow({
+    required this.label,
+    required this.url,
+    required this.isLight,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          size: 15,
+          color: isLight ? AppColors.slate400 : AppColors.slate500,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: isLight ? AppColors.slate500 : AppColors.slate400,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                url,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'monospace',
+                  color: isLight ? AppColors.slate700 : AppColors.slate200,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

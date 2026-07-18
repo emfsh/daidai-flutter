@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import '../network/app_user_agent.dart';
 import '../theme/app_theme.dart';
 
-const _kGitHubRepo = 'linzixuanzz/Dumb-Panel-APP';
+const _kGitHubRepo = 'tall-1997/daidai-flutter';
 const _kGitHubDownloadHost = 'github.com';
 const _kGitHubReleaseHost = 'objects.githubusercontent.com';
 const _kGitHubAssetHost = 'githubusercontent.com';

@@ -649,7 +649,7 @@ class _LogListPageState extends ConsumerState<LogListPage> {
                     : ListView.builder(
                         controller: _scrollController,
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
                         itemCount: state.logs.length,
                         itemBuilder: (_, i) {
                           final log = state.logs[i];
