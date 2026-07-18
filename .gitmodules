@@ -1,0 +1,3 @@
+[submodule "android-new/miuix"]
+	path = android-new/miuix
+	url = https://github.com/compose-miuix-ui/miuix.git

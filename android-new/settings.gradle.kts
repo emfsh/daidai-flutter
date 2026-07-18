@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("miuix/build-plugins")
     repositories {
         google()
         mavenCentral()
@@ -11,11 +12,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://jitpack.io")
-        }
     }
 }
 
 rootProject.name = "DaidaiPanel"
 include(":app")
+include(":miuix:miuix-ui")
+include(":miuix:miuix-core")
+include(":miuix:miuix-icons")

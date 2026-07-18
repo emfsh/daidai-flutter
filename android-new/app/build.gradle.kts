@@ -49,8 +49,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    // Miuix - 使用 JitPack
-    implementation("com.github.compose-miuix-ui:miuix:b459d86")
+    // Miuix - 本地模块
+    implementation(project(":miuix:miuix-ui"))
+    implementation(project(":miuix:miuix-icons"))
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
