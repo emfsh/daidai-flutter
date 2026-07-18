@@ -50,8 +50,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Miuix
-    implementation("top.yukonga.miuix.kmp:miuix-ui:0.4.1")
-    implementation("top.yukonga.miuix.kmp:miuix-icons:0.4.1")
+    implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.3")
+    implementation("top.yukonga.miuix.kmp:miuix-icons:0.9.3")
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")

@@ -8,6 +8,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.daidai.panel.ui.screens.*
+import com.daidai.panel.ui.screens.applock.AppLockScreen
+import com.daidai.panel.ui.screens.deps.DepListScreen
+import com.daidai.panel.ui.screens.logs.LogListScreen
+import com.daidai.panel.ui.screens.notifications.NotificationListScreen
+import com.daidai.panel.ui.screens.openapi.OpenApiScreen
+import com.daidai.panel.ui.screens.scripts.ScriptListScreen
+import com.daidai.panel.ui.screens.security.SecurityScreen
+import com.daidai.panel.ui.screens.serverconfig.ServerConfigScreen
+import com.daidai.panel.ui.screens.subscriptions.SubscriptionListScreen
+import com.daidai.panel.ui.screens.system.SystemSettingsScreen
+import com.daidai.panel.ui.screens.tasks.TaskFormScreen
+import com.daidai.panel.ui.screens.tasks.TaskListScreen
+import com.daidai.panel.ui.screens.users.UserListScreen
 import com.daidai.panel.viewmodel.AuthViewModel
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.TopAppBar
@@ -41,6 +54,7 @@ fun DaidaiApp() {
             }
             composable("home") {
                 HomeScreen(
+                    navController = navController,
                     onLogout = {
                         authViewModel.logout()
                         navController.navigate("login") {
@@ -49,12 +63,67 @@ fun DaidaiApp() {
                     }
                 )
             }
+            composable("tasks") {
+                TaskListScreen()
+            }
+            composable("tasks/new") {
+                TaskFormScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable("tasks/edit/{taskId}") { backStackEntry ->
+                val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull()
+                TaskFormScreen(
+                    taskId = taskId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable("envs") {
+                EnvListScreen()
+            }
+            composable("deps") {
+                DepListScreen()
+            }
+            composable("scripts") {
+                ScriptListScreen()
+            }
+            composable("logs") {
+                LogListScreen()
+            }
+            composable("subscriptions") {
+                SubscriptionListScreen()
+            }
+            composable("notifications") {
+                NotificationListScreen()
+            }
+            composable("openapi") {
+                OpenApiScreen()
+            }
+            composable("security") {
+                SecurityScreen()
+            }
+            composable("applock") {
+                AppLockScreen()
+            }
+            composable("system-settings") {
+                SystemSettingsScreen()
+            }
+            composable("server-config") {
+                ServerConfigScreen()
+            }
+            composable("users") {
+                UserListScreen()
+            }
+            composable("settings") {
+                SettingsScreen()
+            }
         }
     }
 }
 
 @Composable
 fun HomeScreen(
+    navController: androidx.navigation.NavController,
     onLogout: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
