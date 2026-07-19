@@ -74,7 +74,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       return Image.file(
         File(settings.backgroundImagePath!),
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => null,
+        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
       );
     }
     return null;
