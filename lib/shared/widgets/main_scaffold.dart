@@ -246,11 +246,11 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       onPopInvokedWithResult: (didPop, _) => _handleBackPress(didPop),
       child: settings.glassMode
           ? _buildGlassMode(idx, bgImage, hasBg)
-          : _buildClassicMode(idx, isLight, bgImage, hasBg),
+          : _buildClassicMode(idx, isLight, bgImage, hasBg, settings),
     );
   }
 
-  /// 液态玻璃模式：使用 GlassScaffold
+  /// 液态玻璃模式：GlassScaffold 自带背景处理
   Widget _buildGlassMode(int idx, Widget? bgImage, bool hasBg) {
     return GlassScaffold(
       background: hasBg ? bgImage : null,
@@ -259,35 +259,26 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     );
   }
 
-  /// 经典模式：使用普通 Scaffold
+  /// 经典模式：用 GlassPage 包裹确保背景可见
   Widget _buildClassicMode(
-      int idx, bool isLight, Widget? bgImage, bool hasBg) {
-    final settings = ref.watch(appStyleProvider);
-    return Stack(
-      children: [
-        // 背景图层
-        if (hasBg) Positioned.fill(child: bgImage!),
-
-        // 模糊层
-        if (hasBg)
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: settings.blurIntensity,
-                sigmaY: settings.blurIntensity,
-              ),
-              child: Container(color: Colors.black.withAlpha(15)),
-            ),
-          ),
-
-        // 内容层
-        Scaffold(
-          backgroundColor: hasBg ? Colors.transparent : null,
+      int idx, bool isLight, Widget? bgImage, bool hasBg, AppStyleSettings settings) {
+    if (hasBg) {
+      // 有背景图时用 GlassPage 让背景正确渲染
+      return GlassPage(
+        background: bgImage,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
           body: widget.child,
           extendBody: true,
           bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
         ),
-      ],
+      );
+    }
+    // 无背景图时直接用 Scaffold
+    return Scaffold(
+      body: widget.child,
+      extendBody: true,
+      bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
     );
   }
 }

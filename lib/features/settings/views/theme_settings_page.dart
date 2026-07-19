@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
 
@@ -99,7 +100,7 @@ class ThemeSettingsPage extends ConsumerWidget {
   }
 }
 
-class _ThemeModeSelector extends StatelessWidget {
+class _ThemeModeSelector extends ConsumerWidget {
   final bool isLight;
   final ThemeMode currentMode;
   final ValueChanged<ThemeMode> onChanged;
@@ -111,33 +112,26 @@ class _ThemeModeSelector extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isLight ? AppColors.glassCard : AppColors.slate900,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
-          width: 0.5,
-        ),
-      ),
-      child: Row(
-        children: ThemeMode.values.map((mode) {
-          final isSelected = mode == currentMode;
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => onChanged(mode),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? (isLight
-                          ? AppColors.primary.withAlpha(20)
-                          : AppColors.primary.withAlpha(30))
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(16),
-                ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final rowContent = Row(
+      children: ThemeMode.values.map((mode) {
+        final isSelected = mode == currentMode;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => onChanged(mode),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? (isLight
+                        ? AppColors.primary.withAlpha(20)
+                        : AppColors.primary.withAlpha(30))
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -172,6 +166,25 @@ class _ThemeModeSelector extends StatelessWidget {
         }).toList(),
       ),
     );
+
+    if (glassMode) {
+      return GlassCard(
+        padding: EdgeInsets.zero,
+        child: rowContent,
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isLight ? AppColors.glassCard : AppColors.slate900,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
+          width: 0.5,
+        ),
+      ),
+      child: rowContent,
+    );
   }
 
   String _modeLabel(ThemeMode mode) {
@@ -197,7 +210,7 @@ class _ThemeModeSelector extends StatelessWidget {
   }
 }
 
-class _GlassModeCard extends StatelessWidget {
+class _GlassModeCard extends ConsumerWidget {
   final bool isLight;
   final bool enabled;
   final ValueChanged<bool> onChanged;
@@ -209,7 +222,56 @@ class _GlassModeCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: enabled
+                ? AppColors.primary.withAlpha(20)
+                : (isLight ? AppColors.slate100 : AppColors.slate800),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.blur_on,
+            size: 22,
+            color: enabled
+                ? AppColors.primary
+                : (isLight ? AppColors.slate400 : AppColors.slate500),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '液态玻璃风格',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'iOS 26 液态玻璃效果',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isLight ? AppColors.slate400 : AppColors.slate500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Switch(value: enabled, onChanged: onChanged),
+      ],
+    );
+
+    if (glassMode) {
+      return GlassCard(padding: const EdgeInsets.all(16), child: content);
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -220,58 +282,12 @@ class _GlassModeCard extends StatelessWidget {
           width: 0.5,
         ),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: enabled
-                  ? AppColors.primary.withAlpha(20)
-                  : (isLight
-                      ? AppColors.slate100
-                      : AppColors.slate800),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.blur_on,
-              size: 22,
-              color: enabled
-                  ? AppColors.primary
-                  : (isLight ? AppColors.slate400 : AppColors.slate500),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '液态玻璃风格',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'iOS 26 液态玻璃效果',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isLight ? AppColors.slate400 : AppColors.slate500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: enabled,
-            onChanged: onChanged,
-          ),
-        ],
-      ),
+      child: content,
     );
   }
 }
 
-class _BackgroundImageCard extends StatelessWidget {
+class _BackgroundImageCard extends ConsumerWidget {
   final bool isLight;
   final String? currentPath;
   final VoidCallback onPick;
@@ -285,122 +301,114 @@ class _BackgroundImageCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: currentPath != null ? null : onPick,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isLight ? AppColors.glassCard : AppColors.slate900,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
-            width: 0.5,
-          ),
-        ),
-        child: currentPath != null
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      File(currentPath!),
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: isLight
-                              ? AppColors.slate100
-                              : AppColors.slate800,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            color: isLight
-                                ? AppColors.slate400
-                                : AppColors.slate500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      TextButton.icon(
-                        onPressed: onPick,
-                        icon: const Icon(Icons.swap_horiz, size: 18),
-                        label: const Text('更换图片'),
-                      ),
-                      const Spacer(),
-                      TextButton.icon(
-                        onPressed: onClear,
-                        icon: const Icon(Icons.delete_outline,
-                            size: 18, color: AppColors.red500),
-                        label: const Text('移除',
-                            style: TextStyle(color: AppColors.red500)),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : Row(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = currentPath != null
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  File(currentPath!),
+                  height: 120,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 120,
                     decoration: BoxDecoration(
-                      color: isLight
-                          ? AppColors.slate100
-                          : AppColors.slate800,
+                      color: isLight ? AppColors.slate100 : AppColors.slate800,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
-                      Icons.wallpaper_outlined,
-                      size: 22,
-                      color:
-                          isLight ? AppColors.slate400 : AppColors.slate500,
+                    child: Center(
+                      child: Icon(Icons.broken_image_outlined,
+                          color: isLight
+                              ? AppColors.slate400
+                              : AppColors.slate500),
                     ),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          '选择背景图片',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '从相册选择图片作为背景',
-                          style: TextStyle(
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: onPick,
+                    icon: const Icon(Icons.swap_horiz, size: 18),
+                    label: const Text('更换图片'),
+                  ),
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: onClear,
+                    icon: const Icon(Icons.delete_outline,
+                        size: 18, color: AppColors.red500),
+                    label: const Text('移除',
+                        style: TextStyle(color: AppColors.red500)),
+                  ),
+                ],
+              ),
+            ],
+          )
+        : Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: isLight ? AppColors.slate100 : AppColors.slate800,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.wallpaper_outlined,
+                    size: 22,
+                    color: isLight ? AppColors.slate400 : AppColors.slate500),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('选择背景图片',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 2),
+                    Text('从相册选择图片作为背景',
+                        style: TextStyle(
                             fontSize: 12,
                             color: isLight
                                 ? AppColors.slate400
-                                : AppColors.slate500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(Icons.chevron_right,
-                      size: 20,
-                      color:
-                          isLight ? AppColors.slate400 : AppColors.slate600),
-                ],
+                                : AppColors.slate500)),
+                  ],
+                ),
               ),
-      ),
+              Icon(Icons.chevron_right,
+                  size: 20,
+                  color: isLight ? AppColors.slate400 : AppColors.slate600),
+            ],
+          );
+
+    return GestureDetector(
+      onTap: currentPath != null ? null : onPick,
+      child: glassMode
+          ? GlassCard(padding: const EdgeInsets.all(16), child: content)
+          : Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isLight ? AppColors.glassCard : AppColors.slate900,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color:
+                      isLight ? AppColors.glassCardBorder : AppColors.slate800,
+                  width: 0.5,
+                ),
+              ),
+              child: content,
+            ),
     );
   }
 }
 
-class _BlurSliderCard extends StatelessWidget {
+class _BlurSliderCard extends ConsumerWidget {
   final bool isLight;
   final double value;
   final ValueChanged<double> onChanged;
@@ -412,7 +420,60 @@ class _BlurSliderCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.blur_on,
+                size: 18,
+                color: isLight ? AppColors.slate500 : AppColors.slate400),
+            const SizedBox(width: 8),
+            const Text('背景模糊程度',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withAlpha(20),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '${value.round()}',
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary),
+              ),
+            ),
+          ],
+        ),
+        SliderTheme(
+          data: SliderThemeData(
+            activeTrackColor: AppColors.primary,
+            inactiveTrackColor:
+                isLight ? AppColors.slate200 : AppColors.slate700,
+            thumbColor: AppColors.primary,
+            overlayColor: AppColors.primary.withAlpha(30),
+          ),
+          child: Slider(
+            value: value,
+            min: 0,
+            max: 50,
+            divisions: 50,
+            onChanged: onChanged,
+          ),
+        ),
+      ],
+    );
+
+    if (glassMode) {
+      return GlassCard(padding: const EdgeInsets.all(16), child: content);
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -423,56 +484,7 @@ class _BlurSliderCard extends StatelessWidget {
           width: 0.5,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.blur_on,
-                  size: 18,
-                  color: isLight ? AppColors.slate500 : AppColors.slate400),
-              const SizedBox(width: 8),
-              const Text(
-                '背景模糊程度',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(20),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${value.round()}',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SliderTheme(
-            data: SliderThemeData(
-              activeTrackColor: AppColors.primary,
-              inactiveTrackColor:
-                  isLight ? AppColors.slate200 : AppColors.slate700,
-              thumbColor: AppColors.primary,
-              overlayColor: AppColors.primary.withAlpha(30),
-            ),
-            child: Slider(
-              value: value,
-              min: 0,
-              max: 50,
-              divisions: 50,
-              onChanged: onChanged,
-            ),
-          ),
-        ],
-      ),
+      child: content,
     );
   }
 }

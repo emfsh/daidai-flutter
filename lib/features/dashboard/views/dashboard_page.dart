@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../core/auth/auth_provider.dart';
 import '../../../core/services/app_update_service.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../widgets/task_stats_card.dart';
 import '../widgets/trend_chart.dart';
@@ -397,54 +399,31 @@ class _DashboardQuickActionData {
   });
 }
 
-class _ServerInfoCard extends StatelessWidget {
+class _ServerInfoCard extends ConsumerWidget {
   final DashboardData data;
   final bool isLight;
 
   const _ServerInfoCard({required this.data, required this.isLight});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isLight
-              ? [AppColors.glassCard, AppColors.slate50]
-              : [AppColors.slate900, AppColors.slate800],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
-          width: 0.5,
-        ),
-        boxShadow: isLight
-            ? [
-                BoxShadow(
-                  color: AppColors.slate900.withAlpha(8),
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
-      ),
-      child: Stack(
-        children: [
-          // 装饰圆
-          Positioned(
-            top: -30,
-            right: -30,
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(isLight ? 20 : 10),
-                shape: BoxShape.circle,
-              ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = Stack(
+      children: [
+        // 装饰圆
+        Positioned(
+          top: -30,
+          right: -30,
+          child: Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withAlpha(isLight ? 20 : 10),
+              shape: BoxShape.circle,
             ),
           ),
+        ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -516,10 +495,36 @@ class _ServerInfoCard extends StatelessWidget {
         ],
       ),
     );
+
+    if (glassMode) {
+      return GlassCard(
+        padding: const EdgeInsets.all(20),
+        child: content,
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isLight
+              ? [AppColors.glassCard, AppColors.slate50]
+              : [AppColors.slate900, AppColors.slate800],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
+          width: 0.5,
+        ),
+      ),
+      child: content,
+    );
   }
 }
 
-class _StatCard extends StatelessWidget {
+class _StatCard extends ConsumerWidget {
   final IconData icon;
   final Color iconBg;
   final Color iconBgDark;
@@ -547,7 +552,83 @@ class _StatCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: isLight ? iconBg : iconBgDark,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                size: 16,
+                color: isLight ? iconColor : iconColorDark,
+              ),
+            ),
+            Text(
+              valueText,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: isLight ? iconColor : iconColorDark,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (subtitle != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isLight ? AppColors.slate500 : AppColors.slate400,
+                ),
+              ),
+              Text(subtitle!, style: const TextStyle(fontSize: 12)),
+            ],
+          )
+        else
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isLight ? AppColors.slate500 : AppColors.slate400,
+            ),
+          ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: value == null ? null : (value! / 100).clamp(0.0, 1.0),
+            minHeight: 6,
+            backgroundColor: isLight
+                ? AppColors.slate100
+                : AppColors.slate800,
+            valueColor: AlwaysStoppedAnimation(barColor),
+          ),
+        ),
+      ],
+    );
+
+    if (glassMode) {
+      return GlassCard(
+        padding: const EdgeInsets.all(16),
+        child: content,
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -557,87 +638,13 @@ class _StatCard extends StatelessWidget {
           color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
           width: 0.5,
         ),
-        boxShadow: isLight
-            ? [
-                BoxShadow(
-                  color: AppColors.slate900.withAlpha(6),
-                  blurRadius: 8,
-                  offset: const Offset(0, 1),
-                ),
-              ]
-            : null,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: isLight ? iconBg : iconBgDark,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  icon,
-                  size: 16,
-                  color: isLight ? iconColor : iconColorDark,
-                ),
-              ),
-              Text(
-                valueText,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: isLight ? iconColor : iconColorDark,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (subtitle != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isLight ? AppColors.slate500 : AppColors.slate400,
-                  ),
-                ),
-                Text(subtitle!, style: const TextStyle(fontSize: 12)),
-              ],
-            )
-          else
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: isLight ? AppColors.slate500 : AppColors.slate400,
-              ),
-            ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: value == null ? null : (value! / 100).clamp(0.0, 1.0),
-              minHeight: 6,
-              backgroundColor: isLight
-                  ? AppColors.slate100
-                  : AppColors.slate800,
-              valueColor: AlwaysStoppedAnimation(barColor),
-            ),
-          ),
-        ],
-      ),
+      child: content,
     );
   }
 }
 
-class _QuickAction extends StatelessWidget {
+class _QuickAction extends ConsumerWidget {
   final IconData icon;
   final String label;
   final bool isLight;
@@ -651,7 +658,37 @@ class _QuickAction extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = Column(
+      children: [
+        Icon(
+          icon,
+          size: 22,
+          color: isLight ? AppColors.slate700 : AppColors.slate300,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+
+    if (glassMode) {
+      return Expanded(
+        child: GestureDetector(
+          onTap: onTap,
+          child: GlassCard(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: content,
+          ),
+        ),
+      );
+    }
+
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -664,31 +701,8 @@ class _QuickAction extends StatelessWidget {
               color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
               width: 0.5,
             ),
-            boxShadow: isLight
-                ? [
-                    BoxShadow(
-                      color: AppColors.slate900.withAlpha(6),
-                      blurRadius: 6,
-                      offset: const Offset(0, 1),
-                    ),
-                  ]
-                : null,
           ),
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                size: 22,
-                color: isLight ? AppColors.slate700 : AppColors.slate300,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                style: const TextStyle(fontSize: 10),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+          child: content,
         ),
       ),
     );

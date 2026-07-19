@@ -133,3 +133,79 @@ class AppListTile extends ConsumerWidget {
     );
   }
 }
+
+/// 液态玻璃感知的容器装饰
+/// glassMode=true 时返回透明装饰（配合 GlassCard 使用）
+/// glassMode=false 时返回实体装饰
+BoxDecoration glassAwareDecoration({
+  required bool glassMode,
+  required bool isLight,
+  Color? lightColor,
+  Color? darkColor,
+  double borderRadius = 16,
+  Color? borderColor,
+  double borderWidth = 0.5,
+}) {
+  if (glassMode) {
+    return BoxDecoration(
+      borderRadius: BorderRadius.circular(borderRadius),
+    );
+  }
+  return BoxDecoration(
+    color: (lightColor ?? AppColors.glassCard),
+    borderRadius: BorderRadius.circular(borderRadius),
+    border: Border.all(
+      color: borderColor ??
+          (isLight ? AppColors.glassCardBorder : AppColors.slate800),
+      width: borderWidth,
+    ),
+  );
+}
+
+/// 液态玻璃感知的容器组件
+/// glassMode=true 时使用 GlassCard
+/// glassMode=false 时使用普通 Container
+class GlassAwareContainer extends ConsumerWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final double borderRadius;
+  final Color? lightColor;
+  final Color? darkColor;
+
+  const GlassAwareContainer({
+    super.key,
+    required this.child,
+    this.padding,
+    this.borderRadius = 16,
+    this.lightColor,
+    this.darkColor,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(appStyleProvider);
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
+    if (settings.glassMode) {
+      return GlassCard(
+        padding: padding ?? const EdgeInsets.all(16),
+        child: child,
+      );
+    }
+
+    return Container(
+      padding: padding ?? const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isLight
+            ? (lightColor ?? AppColors.glassCard)
+            : (darkColor ?? AppColors.slate900),
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
+          width: 0.5,
+        ),
+      ),
+      child: child,
+    );
+  }
+}

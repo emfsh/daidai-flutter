@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/auth/auth_provider.dart';
 import '../../../core/network/dio_client.dart';
@@ -94,81 +95,25 @@ class _MorePageState extends ConsumerState<MorePage> {
 
           // User Card
           if (user != null)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isLight ? AppColors.glassCard : AppColors.slate900,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
-                  width: 0.5,
-                ),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      _buildUserAvatar(user, 48),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user.username,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              user.role.toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: isLight
-                                    ? AppColors.slate500
-                                    : AppColors.slate400,
-                              ),
-                            ),
-                          ],
-                        ),
+            ref.watch(appStyleProvider).glassMode
+                ? GlassCard(
+                    padding: const EdgeInsets.all(16),
+                    child: _buildUserCardContent(user, isLight),
+                  )
+                : Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isLight ? AppColors.glassCard : AppColors.slate900,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: isLight
+                            ? AppColors.glassCardBorder
+                            : AppColors.slate800,
+                        width: 0.5,
                       ),
-                    ],
-                  ),
-                  if (_serverUrl != null) ...[
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.link,
-                          size: 14,
-                          color: isLight
-                              ? AppColors.slate400
-                              : AppColors.slate500,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            _serverUrl!
-                                .replaceAll('http://', '')
-                                .replaceAll('https://', ''),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isLight
-                                  ? AppColors.slate500
-                                  : AppColors.slate400,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
                     ),
-                  ],
-                ],
-              ),
-            ),
+                    child: _buildUserCardContent(user, isLight),
+                  ),
           const SizedBox(height: 24),
 
           // App Settings Section
@@ -396,6 +341,67 @@ class _MorePageState extends ConsumerState<MorePage> {
     );
   }
 
+  Widget _buildUserCardContent(dynamic user, bool isLight) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            _buildUserAvatar(user, 48),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.username,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    user.role.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isLight ? AppColors.slate500 : AppColors.slate400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        if (_serverUrl != null) ...[
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(
+                Icons.link,
+                size: 14,
+                color: isLight ? AppColors.slate400 : AppColors.slate500,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  _serverUrl!
+                      .replaceAll('http://', '')
+                      .replaceAll('https://', ''),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isLight ? AppColors.slate500 : AppColors.slate400,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -599,7 +605,7 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
-class _SettingsItem extends StatelessWidget {
+class _SettingsItem extends ConsumerWidget {
   final IconData icon;
   final String title;
   final bool isLight;
@@ -615,7 +621,45 @@ class _SettingsItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final rowContent = Row(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: isLight ? AppColors.slate500 : AppColors.slate400,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        if (trailing != null) ...[trailing!, const SizedBox(width: 8)],
+        Icon(
+          Icons.chevron_right,
+          size: 18,
+          color: isLight ? AppColors.slate400 : AppColors.slate600,
+        ),
+      ],
+    );
+
+    if (glassMode) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: GlassCard(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: GestureDetector(onTap: onTap, child: rowContent),
+        ),
+      );
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -629,31 +673,7 @@ class _SettingsItem extends StatelessWidget {
             width: 0.5,
           ),
         ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isLight ? AppColors.slate500 : AppColors.slate400,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            if (trailing != null) ...[trailing!, const SizedBox(width: 8)],
-            Icon(
-              Icons.chevron_right,
-              size: 18,
-              color: isLight ? AppColors.slate400 : AppColors.slate600,
-            ),
-          ],
-        ),
+        child: rowContent,
       ),
     );
   }

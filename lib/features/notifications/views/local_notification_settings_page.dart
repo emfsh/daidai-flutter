@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../core/services/local_notification_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 
 class LocalNotificationSettingsPage extends ConsumerStatefulWidget {
   const LocalNotificationSettingsPage({super.key});
@@ -74,49 +76,25 @@ class _LocalNotificationSettingsPageState
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isLight ? AppColors.glassCard : AppColors.slate900,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
-                width: 0.5,
-              ),
-              boxShadow: isLight
-                  ? [
-                      BoxShadow(
-                        color: AppColors.slate900.withAlpha(6),
-                        blurRadius: 8,
-                        offset: const Offset(0, 1),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '通知权限',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isLight ? AppColors.slate500 : AppColors.slate400,
+          ref.watch(appStyleProvider).glassMode
+              ? GlassCard(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildPermissionCard(isLight),
+                )
+              : Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isLight ? AppColors.glassCard : AppColors.slate900,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isLight
+                          ? AppColors.glassCardBorder
+                          : AppColors.slate800,
+                      width: 0.5,
+                    ),
                   ),
+                  child: _buildPermissionCard(isLight),
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: OutlinedButton.icon(
-                    onPressed: _requestPermission,
-                    icon: const Icon(Icons.security, size: 18),
-                    label: const Text('请求通知权限'),
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 16),
           Text(
             '通知渠道',
@@ -166,9 +144,63 @@ class _LocalNotificationSettingsPageState
       ),
     );
   }
+
+  Widget _buildPermissionCard(bool isLight) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '通知权限',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isLight ? AppColors.slate500 : AppColors.slate400,
+          ),
+        ),
+        const SizedBox(height: 12),
+        FutureBuilder<bool>(
+          future: _checkPermission(),
+          builder: (context, snapshot) {
+            final granted = snapshot.data ?? false;
+            return Row(
+              children: [
+                Icon(
+                  granted ? Icons.check_circle : Icons.cancel,
+                  size: 20,
+                  color: granted ? AppColors.primary : AppColors.red500,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    granted ? '通知权限已授予' : '通知权限未授予',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: granted
+                          ? (isLight ? AppColors.slate700 : AppColors.slate200)
+                          : AppColors.red500,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 44,
+          child: OutlinedButton.icon(
+            onPressed: _requestPermission,
+            icon: const Icon(Icons.security, size: 18),
+            label: const Text('请求通知权限'),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-class _ChannelTile extends StatelessWidget {
+class _ChannelTile extends ConsumerWidget {
   final IconData icon;
   final Color iconColor;
   final Color iconBg;
@@ -194,7 +226,65 @@ class _ChannelTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: isLight ? iconBg : iconBgDark,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 2),
+                  Text(subtitle,
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: isLight
+                              ? AppColors.slate500
+                              : AppColors.slate400)),
+                ],
+              ),
+            ),
+            Switch(
+              value: enabled,
+              activeColor: AppColors.primary,
+              onChanged: onToggle,
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        SizedBox(
+          width: double.infinity,
+          height: 40,
+          child: OutlinedButton.icon(
+            onPressed: onTest,
+            icon: const Icon(Icons.send, size: 16),
+            label: const Text('发送测试通知', style: TextStyle(fontSize: 13)),
+          ),
+        ),
+      ],
+    );
+
+    if (glassMode) {
+      return GlassCard(padding: const EdgeInsets.all(16), child: content);
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -204,72 +294,8 @@ class _ChannelTile extends StatelessWidget {
           color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
           width: 0.5,
         ),
-        boxShadow: isLight
-            ? [
-                BoxShadow(
-                  color: AppColors.slate900.withAlpha(6),
-                  blurRadius: 8,
-                  offset: const Offset(0, 1),
-                ),
-              ]
-            : null,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: isLight ? iconBg : iconBgDark,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, size: 20, color: iconColor),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isLight ? AppColors.slate500 : AppColors.slate400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Switch(
-                value: enabled,
-                activeColor: AppColors.primary,
-                onChanged: onToggle,
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            height: 40,
-            child: OutlinedButton.icon(
-              onPressed: onTest,
-              icon: const Icon(Icons.send, size: 16),
-              label: const Text('发送测试通知', style: TextStyle(fontSize: 13)),
-            ),
-          ),
-        ],
-      ),
+      child: content,
     );
   }
 }

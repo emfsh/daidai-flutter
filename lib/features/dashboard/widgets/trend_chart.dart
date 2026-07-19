@@ -1,16 +1,20 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 
-class TrendChart extends StatelessWidget {
+class TrendChart extends ConsumerWidget {
   final List<dynamic> data;
 
   const TrendChart({super.key, required this.data});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
+    final glassMode = ref.watch(appStyleProvider).glassMode;
 
     final successSpots = <FlSpot>[];
     final failSpots = <FlSpot>[];
@@ -25,22 +29,13 @@ class TrendChart extends StatelessWidget {
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isLight ? Colors.white : AppColors.slate900,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isLight ? AppColors.slate200 : AppColors.slate800,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                '近7天执行统计',
+    final chartContent = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '近7天执行统计',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -130,6 +125,25 @@ class TrendChart extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    if (glassMode) {
+      return GlassCard(
+        padding: const EdgeInsets.all(16),
+        child: chartContent,
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isLight ? Colors.white : AppColors.slate900,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isLight ? AppColors.slate200 : AppColors.slate800,
+        ),
+      ),
+      child: chartContent,
     );
   }
 

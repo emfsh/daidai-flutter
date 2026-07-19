@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 
-class TaskStatsCard extends StatelessWidget {
+class TaskStatsCard extends ConsumerWidget {
   final int total;
   final int enabled;
   final int running;
@@ -22,14 +25,80 @@ class TaskStatsCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
+    final glassMode = ref.watch(appStyleProvider).glassMode;
+
+    final content = Column(
+      children: [
+        Row(
+          children: [
+            _StatItem(
+              label: '总任务',
+              value: '$total',
+              color: AppColors.primary,
+              isLight: isLight,
+            ),
+            _StatItem(
+              label: '已启用',
+              value: '$enabled',
+              color: AppColors.primary,
+              isLight: isLight,
+            ),
+            _StatItem(
+              label: '运行中',
+              value: '$running',
+              color: AppColors.blue500,
+              isLight: isLight,
+            ),
+            _StatItem(
+              label: '已禁用',
+              value: '$disabled',
+              color: AppColors.slate400,
+              isLight: isLight,
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Divider(
+            height: 1,
+            color: isLight ? AppColors.glassDivider : AppColors.slate800,
+          ),
+        ),
+        Row(
+          children: [
+            _StatItem(
+              label: '今日成功',
+              value: '$todaySuccess',
+              color: AppColors.primary,
+              isLight: isLight,
+            ),
+            _StatItem(
+              label: '今日失败',
+              value: '$todayFailed',
+              color: AppColors.red500,
+              isLight: isLight,
+            ),
+          ],
+        ),
+      ],
+    );
+
+    if (glassMode) {
+      return GestureDetector(
+        onTap: onTap,
+        child: GlassCard(
+          padding: const EdgeInsets.all(16),
+          child: content,
+        ),
+      );
+    }
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        // 主页任务概览现在可以直接点击跳转，方便用户从统计卡片进入任务列表。
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Ink(
@@ -42,61 +111,7 @@ class TaskStatsCard extends StatelessWidget {
               width: 0.5,
             ),
           ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  _StatItem(
-                    label: '总任务',
-                    value: '$total',
-                    color: AppColors.primary,
-                    isLight: isLight,
-                  ),
-                  _StatItem(
-                    label: '已启用',
-                    value: '$enabled',
-                    color: AppColors.primary,
-                    isLight: isLight,
-                  ),
-                  _StatItem(
-                    label: '运行中',
-                    value: '$running',
-                    color: AppColors.blue500,
-                    isLight: isLight,
-                  ),
-                  _StatItem(
-                    label: '已禁用',
-                    value: '$disabled',
-                    color: AppColors.slate400,
-                    isLight: isLight,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Divider(
-                  height: 1,
-                  color: isLight ? AppColors.glassDivider : AppColors.slate800,
-                ),
-              ),
-              Row(
-                children: [
-                  _StatItem(
-                    label: '今日成功',
-                    value: '$todaySuccess',
-                    color: AppColors.primary,
-                    isLight: isLight,
-                  ),
-                  _StatItem(
-                    label: '今日失败',
-                    value: '$todayFailed',
-                    color: AppColors.red500,
-                    isLight: isLight,
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: content,
         ),
       ),
     );
