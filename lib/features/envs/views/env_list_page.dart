@@ -719,6 +719,7 @@ class _EnvListPageState extends ConsumerState<EnvListPage> {
     final state = ref.watch(envListProvider);
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
+    final glassMode = ref.watch(appStyleProvider).glassMode;
     final messenger = ScaffoldMessenger.of(context);
     final selectedCount = _selectedIds.length;
     final allSelected = _isAllSelected(state.envs);
@@ -1897,6 +1898,7 @@ class _EnvCard extends StatefulWidget {
   const _EnvCard({
     required this.env,
     required this.isLight,
+    required this.glassMode,
     required this.selectionMode,
     required this.selected,
     required this.onTap,

@@ -431,6 +431,7 @@ class _LogListPageState extends ConsumerState<LogListPage> {
     });
     final state = ref.watch(logListProvider);
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final glassMode = ref.watch(appStyleProvider).glassMode;
 
     return Scaffold(
       body: Padding(

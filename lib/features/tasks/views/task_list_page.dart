@@ -523,6 +523,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     final state = ref.watch(taskProvider);
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
+    final glassMode = ref.watch(appStyleProvider).glassMode;
     _collectKnownGroups(state.tasks);
     final groupedTasks = _sortGroupsByOrder(_groupTasks(state.tasks));
     final selectedCount = _selectedTaskIds.length;
@@ -2423,7 +2424,7 @@ List<String> _splitCommandTokens(String command) {
   return tokens;
 }
 
-class _MetaChip extends StatelessWidget {
+class _MetaChip extends ConsumerWidget {
   final String label;
   final bool active;
 
