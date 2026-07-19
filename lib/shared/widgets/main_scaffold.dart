@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 
@@ -81,60 +80,11 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     return null;
   }
 
-  Widget _buildGlassBottomBar(int idx) {
-    return GlassTabBar.bottom(
-      selectedIndex: idx,
-      onTabSelected: _onTabSelected,
-      iconSize: 22,
-      labelFontSize: 10,
-      barHeight: 58,
-      horizontalPadding: 16,
-      verticalPadding: 10,
-      selectedIconColor: AppColors.primary,
-      indicatorColor: AppColors.primary.withAlpha(60),
-      glowOpacity: 0.4,
-      glowBlurRadius: 24,
-      magnification: 1.1,
-      tabs: const [
-        GlassTab(
-          icon: Icon(Icons.space_dashboard_outlined),
-          activeIcon: Icon(Icons.space_dashboard),
-          label: '主页',
-          glowColor: AppColors.primary,
-        ),
-        GlassTab(
-          icon: Icon(Icons.schedule_outlined),
-          activeIcon: Icon(Icons.schedule),
-          label: '任务',
-          glowColor: AppColors.primary,
-        ),
-        GlassTab(
-          icon: Icon(Icons.terminal_outlined),
-          activeIcon: Icon(Icons.terminal),
-          label: '日志',
-          glowColor: AppColors.primary,
-        ),
-        GlassTab(
-          icon: Icon(Icons.key_outlined),
-          activeIcon: Icon(Icons.key),
-          label: '变量',
-          glowColor: AppColors.primary,
-        ),
-        GlassTab(
-          icon: Icon(Icons.menu_outlined),
-          activeIcon: Icon(Icons.menu),
-          label: '更多',
-          glowColor: AppColors.primary,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildClassicBottomBar(int idx, bool isLight) {
+  Widget _buildGlassBottomBar(int idx, bool isLight) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10, left: 14, right: 14),
+      padding: const EdgeInsets.only(bottom: 10, left: 12, right: 12),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
           child: Container(
@@ -143,19 +93,31 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: isLight
-                    ? [Colors.white.withAlpha(200), Colors.white.withAlpha(140)]
+                    ? [
+                        Colors.white.withAlpha(180),
+                        Colors.white.withAlpha(120),
+                      ]
                     : [
-                        AppColors.slate800.withAlpha(180),
-                        AppColors.slate900.withAlpha(140),
+                        AppColors.slate800.withAlpha(160),
+                        AppColors.slate900.withAlpha(120),
                       ],
               ),
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: isLight
                     ? Colors.white.withAlpha(200)
-                    : Colors.white.withAlpha(25),
+                    : Colors.white.withAlpha(20),
                 width: 0.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: isLight
+                      ? AppColors.slate900.withAlpha(15)
+                      : Colors.black.withAlpha(50),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: SafeArea(
               top: false,
@@ -163,48 +125,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 child: Row(
-                  children: [
-                    _ClassicNavItem(
-                      icon: Icons.space_dashboard_outlined,
-                      activeIcon: Icons.space_dashboard,
-                      label: '主页',
-                      isActive: idx == 0,
-                      onTap: () => _onTabSelected(0),
-                      isLight: isLight,
-                    ),
-                    _ClassicNavItem(
-                      icon: Icons.schedule_outlined,
-                      activeIcon: Icons.schedule,
-                      label: '任务',
-                      isActive: idx == 1,
-                      onTap: () => _onTabSelected(1),
-                      isLight: isLight,
-                    ),
-                    _ClassicNavItem(
-                      icon: Icons.terminal_outlined,
-                      activeIcon: Icons.terminal,
-                      label: '日志',
-                      isActive: idx == 2,
-                      onTap: () => _onTabSelected(2),
-                      isLight: isLight,
-                    ),
-                    _ClassicNavItem(
-                      icon: Icons.key_outlined,
-                      activeIcon: Icons.key,
-                      label: '变量',
-                      isActive: idx == 3,
-                      onTap: () => _onTabSelected(3),
-                      isLight: isLight,
-                    ),
-                    _ClassicNavItem(
-                      icon: Icons.menu_outlined,
-                      activeIcon: Icons.menu,
-                      label: '更多',
-                      isActive: idx == 4,
-                      onTap: () => _onTabSelected(4),
-                      isLight: isLight,
-                    ),
-                  ],
+                  children: _navItems(idx, isLight),
                 ),
               ),
             ),
@@ -212,6 +133,63 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         ),
       ),
     );
+  }
+
+  List<Widget> _navItems(int idx, bool isLight) {
+    final items = [
+      (Icons.space_dashboard_outlined, Icons.space_dashboard, '主页'),
+      (Icons.schedule_outlined, Icons.schedule, '任务'),
+      (Icons.terminal_outlined, Icons.terminal, '日志'),
+      (Icons.key_outlined, Icons.key, '变量'),
+      (Icons.menu_outlined, Icons.menu, '更多'),
+    ];
+
+    return List.generate(items.length, (i) {
+      final (icon, activeIcon, label) = items[i];
+      final isActive = i == idx;
+      final color = isActive ? AppColors.primary : AppColors.slate400;
+
+      return Expanded(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => _onTabSelected(i),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? AppColors.primary.withAlpha(isLight ? 18 : 25)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    isActive ? activeIcon : icon,
+                    key: ValueKey('$i-$isActive'),
+                    size: 21,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: color,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -225,100 +203,64 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     return PopScope<void>(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) => _handleBackPress(didPop),
-      child: settings.glassMode
-          ? GlassScaffold(
-              background: hasBg ? bgWidget : null,
-              body: widget.child,
-              bottomBar: _buildGlassBottomBar(idx),
-            )
-          : Stack(
-              children: [
-                if (hasBg) Positioned.fill(child: bgWidget),
-                if (hasBg)
-                  Positioned.fill(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: settings.blurIntensity,
-                        sigmaY: settings.blurIntensity,
-                      ),
-                      child: Container(color: Colors.black.withAlpha(20)),
-                    ),
-                  ),
-                Scaffold(
-                  backgroundColor:
-                      hasBg ? Colors.transparent : null,
-                  body: widget.child,
-                  extendBody: true,
-                  bottomNavigationBar:
-                      _buildClassicBottomBar(idx, isLight),
+      child: Stack(
+        children: [
+          // 背景层
+          if (hasBg) Positioned.fill(child: bgWidget),
+
+          // 模糊层
+          if (hasBg)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: settings.blurIntensity,
+                  sigmaY: settings.blurIntensity,
                 ),
-              ],
+                child: Container(color: Colors.black.withAlpha(15)),
+              ),
             ),
+
+          // 内容层
+          Scaffold(
+            backgroundColor: hasBg ? Colors.transparent : null,
+            body: widget.child,
+            extendBody: true,
+            bottomNavigationBar: settings.glassMode
+                ? _buildGlassBottomBar(idx, isLight)
+                : _buildClassicBottomBar(idx, isLight),
+          ),
+        ],
+      ),
     );
   }
-}
 
-class _ClassicNavItem extends StatelessWidget {
-  final IconData icon;
-  final IconData activeIcon;
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-  final bool isLight;
-
-  const _ClassicNavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-    required this.isLight,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isActive ? AppColors.primary : AppColors.slate400;
-
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 2),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? (isLight
-                      ? AppColors.primary.withAlpha(18)
-                      : AppColors.primary.withAlpha(25))
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(14),
+  Widget _buildClassicBottomBar(int idx, bool isLight) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10, left: 14, right: 14),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isLight ? Colors.white : AppColors.slate900,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: isLight ? AppColors.glassCardBorder : AppColors.slate800,
+            width: 0.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isLight
+                  ? AppColors.slate900.withAlpha(12)
+                  : Colors.black.withAlpha(40),
+              blurRadius: 16,
+              offset: const Offset(0, 2),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(isActive ? activeIcon : icon, size: 20, color: color),
-                const SizedBox(height: 1),
-                SizedBox(
-                  height: 11,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: color,
-                        fontWeight:
-                            isActive ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Row(
+              children: _navItems(idx, isLight),
             ),
           ),
         ),

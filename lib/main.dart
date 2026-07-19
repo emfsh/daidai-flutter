@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'app.dart';
 import 'core/auth/auth_interceptor.dart';
 import 'core/auth/auth_provider.dart';
@@ -12,8 +11,6 @@ import 'core/storage/secure_storage.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppUserAgent.initialize();
-
-  await LiquidGlassWidgets.initialize();
 
   try {
     await LocalNotificationService().initialize();
@@ -41,11 +38,6 @@ void main() async {
   await container.read(authProvider.notifier).restoreTrustedLocalSession();
 
   runApp(
-    LiquidGlassWidgets.wrap(
-      child: UncontrolledProviderScope(
-        container: container,
-        child: const DaidaiApp(),
-      ),
-    ),
+    UncontrolledProviderScope(container: container, child: const DaidaiApp()),
   );
 }
