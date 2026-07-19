@@ -973,7 +973,7 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class _Card extends StatelessWidget {
+class _Card extends ConsumerWidget {
   final bool isLight;
   final Widget child;
   const _Card({required this.isLight, required this.child});
@@ -1174,7 +1174,7 @@ class _MirrorField extends StatelessWidget {
   }
 }
 
-class _ActionBtn extends StatelessWidget {
+class _ActionBtn extends ConsumerWidget {
   final IconData icon;
   final String title;
   final String subtitle;

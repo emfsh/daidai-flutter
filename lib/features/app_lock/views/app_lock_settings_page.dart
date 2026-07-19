@@ -440,7 +440,7 @@ class _AppLockSettingsPageState extends ConsumerState<AppLockSettingsPage> {
   }
 }
 
-class _MethodCard extends StatelessWidget {
+class _MethodCard extends ConsumerWidget {
   const _MethodCard({
     required this.icon,
     required this.title,
