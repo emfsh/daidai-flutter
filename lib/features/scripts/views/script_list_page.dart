@@ -1669,7 +1669,7 @@ class _FileTreeItem extends StatefulWidget {
   State<_FileTreeItem> createState() => _FileTreeItemState();
 }
 
-class _FileTreeItemState extends State<_FileTreeItem> {
+class _FileTreeItemState extends ConsumerState<_FileTreeItem> {
   bool _expanded = false;
 
   @override
