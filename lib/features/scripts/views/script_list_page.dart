@@ -1650,7 +1650,7 @@ class _ScriptListPageState extends ConsumerState<ScriptListPage> {
   }
 }
 
-class _FileTreeItem extends StatefulWidget {
+class _FileTreeItem extends ConsumerStatefulWidget {
   final ScriptFile file;
   final bool isLight;
   final int depth;
