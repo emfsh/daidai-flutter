@@ -852,13 +852,13 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                     : _taskSortMode
                     ? _buildTaskReorderView(state.tasks, isLight)
                     : _groupReorderMode
-                    ? _buildGroupReorderView(groupedTasks, isLight)
+                    ? _buildGroupReorderView(groupedTasks, isLight, glassMode)
                     : ListView(
                         controller: _scrollController,
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
                         children: groupedTasks
-                            .map((group) => _buildTaskGroup(group, isLight))
+                            .map((group) => _buildTaskGroup(group, isLight, glassMode))
                             .toList(),
                       ),
               ),
@@ -1187,7 +1187,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     nameController.dispose();
   }
 
-  Widget _buildGroupReorderView(List<_TaskGroup> groups, bool isLight) {
+  Widget _buildGroupReorderView(List<_TaskGroup> groups, bool isLight, bool glassMode) {
     return Column(
       children: [
         Padding(
@@ -1272,7 +1272,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     );
   }
 
-  Widget _buildTaskReorderView(List<Task> tasks, bool isLight) {
+  Widget _buildTaskReorderView(List<Task> tasks, bool isLight, bool glassMode) {
     return ReorderableListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
       itemCount: tasks.length,
@@ -1336,7 +1336,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     );
   }
 
-  Widget _buildTaskGroup(_TaskGroup group, bool isLight) {
+  Widget _buildTaskGroup(_TaskGroup group, bool isLight, bool glassMode) {
     final collapsed = _collapsedGroups.contains(group.key);
     final enabledCount = group.tasks.where((task) => task.isEnabled).length;
     final runningCount = group.tasks.where((task) => task.isRunning).length;

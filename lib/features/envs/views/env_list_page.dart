@@ -1644,7 +1644,7 @@ class _EnvListPageState extends ConsumerState<EnvListPage> {
   }
 }
 
-class _EnvValueSheetEditor extends StatelessWidget {
+class _EnvValueSheetEditor extends ConsumerWidget {
   final String title;
   final TextEditingController controller;
   final VoidCallback onDone;
