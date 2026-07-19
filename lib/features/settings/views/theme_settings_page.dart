@@ -157,15 +157,14 @@ class _ThemeModeSelector extends ConsumerWidget {
                                 ? AppColors.slate500
                                 : AppColors.slate400),
                       ),
-                    ),
+                     ),
                   ],
                 ),
               ),
             ),
-    ;
         }).toList(),
       ),
-    ;
+    );
 
     if (glassMode) {
       return GlassCard(
