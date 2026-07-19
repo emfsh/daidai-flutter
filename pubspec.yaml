@@ -66,3 +66,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon.png
+dependency_overrides:
+  meta: ^1.18.0
