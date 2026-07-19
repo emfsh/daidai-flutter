@@ -69,24 +69,16 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     }
   }
 
-  Widget _buildBackground(AppStyleSettings settings, bool isLight) {
+  Widget? _buildBackgroundWidget(AppStyleSettings settings) {
     if (settings.backgroundImagePath != null &&
         settings.backgroundImagePath!.isNotEmpty) {
       return Image.file(
         File(settings.backgroundImagePath!),
         fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-        errorBuilder: (_, __, ___) => _buildDefaultBackground(isLight),
+        errorBuilder: (_, __, ___) => null,
       );
     }
-    return _buildDefaultBackground(isLight);
-  }
-
-  Widget _buildDefaultBackground(bool isLight) {
-    return Container(
-      color: isLight ? AppColors.glassBg : AppColors.slate950,
-    );
+    return null;
   }
 
   Widget _buildGlassBottomBar(int idx) {
@@ -98,31 +90,41 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       barHeight: 58,
       horizontalPadding: 16,
       verticalPadding: 10,
+      selectedIconColor: AppColors.primary,
+      indicatorColor: AppColors.primary.withAlpha(60),
+      glowOpacity: 0.4,
+      glowBlurRadius: 24,
+      magnification: 1.1,
       tabs: const [
         GlassTab(
           icon: Icon(Icons.space_dashboard_outlined),
           activeIcon: Icon(Icons.space_dashboard),
           label: '主页',
+          glowColor: AppColors.primary,
         ),
         GlassTab(
           icon: Icon(Icons.schedule_outlined),
           activeIcon: Icon(Icons.schedule),
           label: '任务',
+          glowColor: AppColors.primary,
         ),
         GlassTab(
           icon: Icon(Icons.terminal_outlined),
           activeIcon: Icon(Icons.terminal),
           label: '日志',
+          glowColor: AppColors.primary,
         ),
         GlassTab(
           icon: Icon(Icons.key_outlined),
           activeIcon: Icon(Icons.key),
           label: '变量',
+          glowColor: AppColors.primary,
         ),
         GlassTab(
           icon: Icon(Icons.menu_outlined),
           activeIcon: Icon(Icons.menu),
           label: '更多',
+          glowColor: AppColors.primary,
         ),
       ],
     );
@@ -154,21 +156,12 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
                     : Colors.white.withAlpha(25),
                 width: 0.5,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: isLight
-                      ? AppColors.slate900.withAlpha(18)
-                      : Colors.black.withAlpha(60),
-                  blurRadius: 24,
-                  spreadRadius: -2,
-                  offset: const Offset(0, 6),
-                ),
-              ],
             ),
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 child: Row(
                   children: [
                     _ClassicNavItem(
@@ -226,44 +219,41 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     final idx = _currentIndex(context);
     final settings = ref.watch(appStyleProvider);
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final hasBg = settings.backgroundImagePath != null &&
-        settings.backgroundImagePath!.isNotEmpty;
+    final bgWidget = _buildBackgroundWidget(settings);
+    final hasBg = bgWidget != null;
 
     return PopScope<void>(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) => _handleBackPress(didPop),
-      child: Stack(
-        children: [
-          // 背景层
-          Positioned.fill(child: _buildBackground(settings, isLight)),
-
-          // 模糊层（有背景图时）
-          if (hasBg)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: settings.blurIntensity,
-                  sigmaY: settings.blurIntensity,
-                ),
-                child: Container(color: Colors.black.withAlpha(20)),
-              ),
-            ),
-
-          // 内容层
-          if (settings.glassMode)
-            GlassScaffold(
+      child: settings.glassMode
+          ? GlassScaffold(
+              background: hasBg ? bgWidget : null,
               body: widget.child,
               bottomBar: _buildGlassBottomBar(idx),
             )
-          else
-            Scaffold(
-              backgroundColor: Colors.transparent,
-              body: widget.child,
-              extendBody: true,
-              bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
+          : Stack(
+              children: [
+                if (hasBg) Positioned.fill(child: bgWidget),
+                if (hasBg)
+                  Positioned.fill(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: settings.blurIntensity,
+                        sigmaY: settings.blurIntensity,
+                      ),
+                      child: Container(color: Colors.black.withAlpha(20)),
+                    ),
+                  ),
+                Scaffold(
+                  backgroundColor:
+                      hasBg ? Colors.transparent : null,
+                  body: widget.child,
+                  extendBody: true,
+                  bottomNavigationBar:
+                      _buildClassicBottomBar(idx, isLight),
+                ),
+              ],
             ),
-        ],
-      ),
     );
   }
 }
