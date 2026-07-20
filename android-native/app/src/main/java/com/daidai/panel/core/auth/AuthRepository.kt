@@ -94,7 +94,7 @@ class AuthRepository @Inject constructor(
                         username = userData["username"] as? String ?: "",
                         role = userData["role"] as? String ?: "viewer",
                         enabled = userData["enabled"] as? Boolean ?: true,
-                        avatarUrl = userData["avatar_url"] as? String
+                        avatarUrl = userData["avatar_url"] as? String ?: ""
                     )
                     secureStorage.saveAuthUser(mapOf(
                         "id" to user.id,
@@ -161,7 +161,7 @@ class AuthRepository @Inject constructor(
                     username = userData["username"] as? String ?: "",
                     role = userData["role"] as? String ?: "viewer",
                     enabled = userData["enabled"] as? Boolean ?: true,
-                    avatarUrl = userData["avatar_url"] as? String
+                    avatarUrl = userData["avatar_url"] as? String ?: ""
                 )
 
                 secureStorage.saveAuthUser(mapOf(
