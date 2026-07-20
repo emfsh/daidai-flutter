@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
+import 'app_background.dart';
 
 class MainScaffold extends ConsumerStatefulWidget {
   final Widget child;
@@ -247,45 +246,16 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     );
   }
 
-  /// 经典模式：普通 Scaffold + 模糊背景
+  /// 经典模式：AppBackground + Scaffold
   Widget _buildClassicMode(
       int idx, bool isLight, bool hasBg, AppStyleSettings settings) {
-    if (hasBg) {
-      return Stack(
-        children: [
-          // 背景图
-          Positioned.fill(
-            child: Image.file(
-              File(settings.backgroundImagePath!),
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-            ),
-          ),
-          // 模糊层
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: settings.blurIntensity,
-                sigmaY: settings.blurIntensity,
-              ),
-              child: Container(color: Colors.black.withAlpha(15)),
-            ),
-          ),
-          // 内容
-          Scaffold(
-            backgroundColor: Colors.transparent,
-            body: widget.child,
-            extendBody: true,
-            bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
-          ),
-        ],
-      );
-    }
-
-    return Scaffold(
-      body: widget.child,
-      extendBody: true,
-      bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: hasBg ? Colors.transparent : null,
+        body: widget.child,
+        extendBody: true,
+        bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
+      ),
     );
   }
 }
