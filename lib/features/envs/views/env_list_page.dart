@@ -1270,9 +1270,6 @@ class _EnvListPageState extends ConsumerState<EnvListPage> {
                                 const SnackBar(content: Text('已复制值')),
                               );
                             },
-                            onEnable: () => _setEnvEnabled(env, true),
-                            onDisable: () => _setEnvEnabled(env, false),
-                            onDelete: () => _deleteEnv(env),
                           );
                         },
                       ),
@@ -1893,9 +1890,6 @@ class _EnvCard extends StatefulWidget {
   final VoidCallback onLongPress;
   final VoidCallback onSelectedChanged;
   final VoidCallback onCopy;
-  final VoidCallback onEnable;
-  final VoidCallback onDisable;
-  final VoidCallback onDelete;
 
   const _EnvCard({
     required this.env,
@@ -1907,9 +1901,6 @@ class _EnvCard extends StatefulWidget {
     required this.onLongPress,
     required this.onSelectedChanged,
     required this.onCopy,
-    required this.onEnable,
-    required this.onDisable,
-    required this.onDelete,
   });
 
   @override
@@ -1917,303 +1908,133 @@ class _EnvCard extends StatefulWidget {
 }
 
 class _EnvCardState extends State<_EnvCard> {
-  static const double _actionWidth = 64;
-  static const double _actionGap = 6;
-  static const double _actionsWidth = _actionWidth * 3 + _actionGap * 2 + 8;
-
-  double _dragOffset = 0;
-  bool _dragging = false;
-
-  @override
-  void didUpdateWidget(covariant _EnvCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.selectionMode || oldWidget.env.id != widget.env.id) {
-      _dragOffset = 0;
-      _dragging = false;
-    }
-  }
-
-  void _closeActions() {
-    if (_dragOffset == 0) {
-      return;
-    }
-    setState(() => _dragOffset = 0);
-  }
-
-  void _runSwipeAction(VoidCallback action) {
-    _closeActions();
-    action();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: _dragOffset == 0,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop || _dragOffset == 0) {
-          return;
+    return GestureDetector(
+      onTap: () {
+        if (widget.selectionMode) {
+          widget.onSelectedChanged();
+        } else {
+          widget.onTap();
         }
-        // 侧滑按钮展开时，系统返回先收起按钮，避免用户回滑时误退出 APP。
-        _closeActions();
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        child: Stack(
-          clipBehavior: Clip.none,
+      onLongPress: widget.onLongPress,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        decoration: BoxDecoration(
+          color: glassCardColor(glassMode: widget.glassMode, isLight: widget.isLight),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: widget.selected
+                ? AppColors.primary
+                : (widget.isLight
+                      ? AppColors.slate200
+                      : AppColors.slate800),
+            width: widget.selected ? 1.4 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _SwipeActionButton(
-                      label: '启用',
-                      icon: Icons.play_arrow_rounded,
-                      color: AppColors.primary,
-                      enabled: !widget.env.enabled,
-                      onTap: () => _runSwipeAction(widget.onEnable),
+            Row(
+              children: [
+                if (widget.selectionMode) ...[
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Checkbox(
+                      value: widget.selected,
+                      onChanged: (_) => widget.onSelectedChanged(),
+                      activeColor: AppColors.primary,
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize:
+                          MaterialTapTargetSize.shrinkWrap,
                     ),
-                    const SizedBox(width: _actionGap),
-                    _SwipeActionButton(
-                      label: '删除',
-                      icon: Icons.delete_outline,
-                      color: AppColors.red500,
-                      enabled: true,
-                      onTap: () => _runSwipeAction(widget.onDelete),
-                    ),
-                    const SizedBox(width: _actionGap),
-                    _SwipeActionButton(
-                      label: '禁用',
-                      icon: Icons.pause_rounded,
-                      color: AppColors.slate500,
-                      enabled: widget.env.enabled,
-                      onTap: () => _runSwipeAction(widget.onDisable),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                if (_dragOffset != 0) {
-                  _closeActions();
-                  return;
-                }
-                widget.onTap();
-              },
-              onLongPress: widget.onLongPress,
-              onHorizontalDragStart: widget.selectionMode
-                  ? null
-                  : (_) => setState(() => _dragging = true),
-              onHorizontalDragUpdate: widget.selectionMode
-                  ? null
-                  : (details) {
-                      // 左滑露出右侧操作按钮；关闭时也限制在卡片内处理，避免和系统返回手势抢动作。
-                      final nextOffset = (_dragOffset + details.delta.dx)
-                          .clamp(-_actionsWidth, 0.0)
-                          .toDouble();
-                      if (nextOffset == _dragOffset) {
-                        return;
-                      }
-                      setState(() => _dragOffset = nextOffset);
-                    },
-              onHorizontalDragCancel: widget.selectionMode
-                  ? null
-                  : () => setState(() => _dragging = false),
-              onHorizontalDragEnd: widget.selectionMode
-                  ? null
-                  : (_) {
-                      final nextOffset =
-                          _dragOffset.abs() > _actionsWidth * 0.42
-                          ? -_actionsWidth
-                          : 0.0;
-                      setState(() {
-                        _dragging = false;
-                        _dragOffset = nextOffset;
-                      });
-                      if (nextOffset == -_actionsWidth) {
-                        HapticFeedback.selectionClick();
-                      }
-                    },
-              child: AnimatedContainer(
-                duration: _dragging
-                    ? Duration.zero
-                    : const Duration(milliseconds: 160),
-                curve: Curves.easeOutCubic,
-                transform: Matrix4.translationValues(_dragOffset, 0, 0),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: glassCardColor(glassMode: widget.glassMode, isLight: widget.isLight),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: widget.selected
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: widget.env.enabled
                         ? AppColors.primary
-                        : (widget.isLight
-                              ? AppColors.slate200
-                              : AppColors.slate800),
-                    width: widget.selected ? 1.4 : 1,
+                        : AppColors.slate300,
+                    shape: BoxShape.circle,
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        if (widget.selectionMode) ...[
-                          SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: Checkbox(
-                              value: widget.selected,
-                              onChanged: (_) => widget.onSelectedChanged(),
-                              activeColor: AppColors.primary,
-                              visualDensity: VisualDensity.compact,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                        Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: widget.env.enabled
-                                ? AppColors.primary
-                                : AppColors.slate300,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            widget.env.name,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: widget.isLight
-                                  ? AppColors.blue600
-                                  : AppColors.blue500,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (!widget.selectionMode) ...[
-                          _MiniBtn(
-                            icon: Icons.copy_outlined,
-                            onTap: widget.onCopy,
-                          ),
-                          const SizedBox(width: 4),
-                          const Icon(
-                            Icons.swipe_left_alt_rounded,
-                            size: 18,
-                            color: AppColors.slate400,
-                          ),
-                        ],
-                      ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    widget.env.name,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: widget.isLight
+                          ? AppColors.blue600
+                          : AppColors.blue500,
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: widget.selectionMode ? 32 : 14,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (!widget.selectionMode) ...[
+                  _MiniBtn(
+                    icon: Icons.copy_outlined,
+                    onTap: widget.onCopy,
+                  ),
+                  const SizedBox(width: 4),
+                  _MiniBtn(
+                    icon: Icons.open_in_new,
+                    onTap: widget.onTap,
+                  ),
+                ],
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                left: widget.selectionMode ? 32 : 14,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.env.value.replaceAll('\n', ' '),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                      color: widget.isLight
+                          ? AppColors.slate500
+                          : AppColors.slate400,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (widget.env.remarks.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.env.remarks,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: widget.isLight
+                            ? AppColors.slate400
+                            : AppColors.slate500,
+                        fontStyle: FontStyle.italic,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.env.value.replaceAll('\n', ' '),
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontFamily: 'monospace',
-                              color: widget.isLight
-                                  ? AppColors.slate500
-                                  : AppColors.slate400,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (widget.env.remarks.isNotEmpty) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              widget.env.remarks,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: widget.isLight
-                                    ? AppColors.slate400
-                                    : AppColors.slate500,
-                                fontStyle: FontStyle.italic,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ],
-                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                ),
+                ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SwipeActionButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  const _SwipeActionButton({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final backgroundColor = enabled
-        ? (isLight ? color.withAlpha(24) : color.withAlpha(34))
-        : (isLight ? AppColors.slate50 : AppColors.slate800);
-    final foregroundColor = enabled ? color : AppColors.slate400;
-
-    return SizedBox(
-      width: _EnvCardState._actionWidth,
-      child: Material(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(10),
-        child: InkWell(
-          onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 18, color: foregroundColor),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: foregroundColor,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

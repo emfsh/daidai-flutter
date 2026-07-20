@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
+import 'app_background.dart';
 
 class MainScaffold extends ConsumerStatefulWidget {
   final Widget child;
@@ -67,18 +68,6 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         context.go('/more');
         break;
     }
-  }
-
-  Widget? _buildBackgroundImage(AppStyleSettings settings) {
-    if (settings.backgroundImagePath != null &&
-        settings.backgroundImagePath!.isNotEmpty) {
-      return Image.file(
-        File(settings.backgroundImagePath!),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-      );
-    }
-    return null;
   }
 
   Widget _buildGlassBottomBar(int idx) {
@@ -234,47 +223,46 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     final idx = _currentIndex(context);
     final settings = ref.watch(appStyleProvider);
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final bgImage = _buildBackgroundImage(settings);
-    final hasBg = bgImage != null;
+    final hasBg = settings.backgroundImagePath != null &&
+        settings.backgroundImagePath!.isNotEmpty;
 
     return PopScope<void>(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) => _handleBackPress(didPop),
       child: settings.glassMode
-          ? _buildGlassMode(idx, bgImage, hasBg)
-          : _buildClassicMode(idx, isLight, bgImage, hasBg, settings),
+          ? _buildGlassMode(idx, hasBg, settings)
+          : _buildClassicMode(idx, isLight, hasBg, settings),
     );
   }
 
-  /// 液态玻璃模式：GlassScaffold 自带背景处理
-  Widget _buildGlassMode(int idx, Widget? bgImage, bool hasBg) {
+  /// 液态玻璃模式：GlassScaffold，背景图传入 background 参数
+  Widget _buildGlassMode(int idx, bool hasBg, AppStyleSettings settings) {
+    Widget? bgWidget;
+    if (hasBg) {
+      bgWidget = Image.file(
+        File(settings.backgroundImagePath!),
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      );
+    }
+
     return GlassScaffold(
-      background: hasBg ? bgImage : null,
+      background: bgWidget,
       body: widget.child,
       bottomBar: _buildGlassBottomBar(idx),
     );
   }
 
-  /// 经典模式：用 GlassPage 包裹确保背景可见
+  /// 经典模式：AppBackground + Scaffold
   Widget _buildClassicMode(
-      int idx, bool isLight, Widget? bgImage, bool hasBg, AppStyleSettings settings) {
-    if (hasBg) {
-      // 有背景图时用 GlassPage 让背景正确渲染
-      return GlassPage(
-        background: bgImage,
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: widget.child,
-          extendBody: true,
-          bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
-        ),
-      );
-    }
-    // 无背景图时直接用 Scaffold
-    return Scaffold(
-      body: widget.child,
-      extendBody: true,
-      bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
+      int idx, bool isLight, bool hasBg, AppStyleSettings settings) {
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: hasBg ? Colors.transparent : null,
+        body: widget.child,
+        extendBody: true,
+        bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
+      ),
     );
   }
 }
