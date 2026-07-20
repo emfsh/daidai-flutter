@@ -462,118 +462,6 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     });
   }
 
-  void _onSearchChanged(String value) {
-    setState(() {});
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      if (_scrollController.hasClients && _scrollController.offset > 0) {
-        _scrollController.jumpTo(0);
-      }
-      ref.read(taskProvider.notifier).setKeyword(value);
-    });
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _searchController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _restoreTaskUiState() async {
-    final collapsedRaw = await SecureStorage.getUiState(
-      _collapsedGroupsStorageKey,
-    );
-    final selectedGroup = await SecureStorage.getUiState(
-      _selectedGroupStorageKey,
-    );
-    final groups = <String>{};
-    if (collapsedRaw != null && collapsedRaw.trim().isNotEmpty) {
-      groups.addAll(
-        collapsedRaw
-            .split('\n')
-            .map((item) => item.trim())
-            .where((item) => item.isNotEmpty),
-      );
-    } else {
-      groups.add('');
-    }
-    if (!mounted) {
-      return;
-    }
-    final groupOrderRaw = await SecureStorage.getUiState(_groupOrderStorageKey);
-    final savedGroupOrder = <String>[];
-    if (groupOrderRaw != null && groupOrderRaw.trim().isNotEmpty) {
-      savedGroupOrder.addAll(groupOrderRaw.split('\n').map((s) => s.trim()));
-    }
-    if (!mounted) return;
-    setState(() {
-      _collapsedGroups
-        ..clear()
-        ..addAll(groups);
-      _groupOrder = savedGroupOrder;
-    });
-    if (selectedGroup != null) {
-      ref
-          .read(taskProvider.notifier)
-          .setLabelFilter(selectedGroup.trim().isEmpty ? null : selectedGroup);
-    }
-  }
-
-  Future<void> _persistCollapsedGroups() {
-    return SecureStorage.saveUiState(
-      _collapsedGroupsStorageKey,
-      _collapsedGroups.join('\n'),
-    );
-  }
-
-  Future<void> _persistGroupOrder() {
-    return SecureStorage.saveUiState(
-      _groupOrderStorageKey,
-      _groupOrder.join('\n'),
-    );
-  }
-
-  List<_TaskGroup> _sortGroupsByOrder(List<_TaskGroup> groups) {
-    if (_groupOrder.isEmpty) return groups;
-    final orderMap = <String, int>{};
-    for (var i = 0; i < _groupOrder.length; i++) {
-      orderMap[_groupOrder[i]] = i;
-    }
-    groups.sort((a, b) {
-      final ai = orderMap[a.key] ?? 9999;
-      final bi = orderMap[b.key] ?? 9999;
-      if (ai != bi) return ai.compareTo(bi);
-      return 0;
-    });
-    return groups;
-  }
-
-  Future<void> _restoreScrollOffsetIfNeeded() async {
-    if (_restoredScrollOffset || !_scrollController.hasClients) {
-      return;
-    }
-    final raw = await SecureStorage.getUiState(_scrollOffsetStorageKey);
-    if (raw == null || raw.trim().isEmpty) {
-      _restoredScrollOffset = true;
-      return;
-    }
-    final offset = double.tryParse(raw);
-    if (offset == null) {
-      _restoredScrollOffset = true;
-      return;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scrollController.hasClients) {
-        return;
-      }
-      final maxOffset = _scrollController.position.maxScrollExtent;
-      _scrollController.jumpTo(offset.clamp(0, maxOffset));
-      _restoredScrollOffset = true;
-    });
-  }
-
   void _collectKnownGroups(List<Task> tasks) {
     final groups =
         tasks
@@ -1389,6 +1277,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
       itemCount: tasks.length,
       onReorder: (oldIndex, newIndex) {
+        // 只先调整本地顺序，等用户点击“完成”后再统一保存到后端，避免拖一下就请求多次。
         ref.read(taskProvider.notifier).reorderLocalTasks(oldIndex, newIndex);
         setState(() => _taskOrderDirty = true);
       },
@@ -1699,10 +1588,9 @@ class _TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<_TaskCard> {
-  // 🌟 核心调整：为了两行网格排版，加宽单按钮并缩小最大展开宽度限制（三列）
-  static const double _actionWidth = 64;
+  static const double _actionWidth = 52;
   static const double _actionGap = 6;
-  static const double _actionsWidth = _actionWidth * 3 + _actionGap * 2 + 12; 
+  static const double _actionsWidth = _actionWidth * 5 + _actionGap * 4 + 8;
 
   double _dragOffset = 0;
   bool _dragging = false;
@@ -1845,6 +1733,7 @@ class _TaskCardState extends State<_TaskCard> {
         if (didPop || _dragOffset == 0) {
           return;
         }
+        // 侧滑按钮展开时，系统返回先收起按钮，避免用户回滑时误退出 APP。
         _closeActions();
       },
       child: Container(
@@ -1852,78 +1741,53 @@ class _TaskCardState extends State<_TaskCard> {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // 🌟 核心修改：利用 Column 嵌套 Row 将后台隐藏菜单重构为双行展示
             Positioned.fill(
               child: Align(
                 alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: SizedBox(
-                    width: _actionsWidth - 6,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // 第一行：3个按钮
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _TaskSwipeActionButton(
-                                label: task.isDisabled ? '启用' : '禁用',
-                                icon: task.isDisabled
-                                    ? Icons.play_circle_outline
-                                    : Icons.pause_circle_outline,
-                                color: task.isDisabled
-                                    ? AppColors.primary
-                                    : AppColors.slate500,
-                                onTap: () => _runSwipeAction(widget.onToggleEnabled),
-                              ),
-                              const SizedBox(width: _actionGap),
-                              _TaskSwipeActionButton(
-                                label: task.isPinned ? '取消' : '置顶',
-                                icon: task.isPinned
-                                    ? Icons.push_pin_outlined
-                                    : Icons.push_pin,
-                                color: AppColors.amber500,
-                                onTap: () => _runSwipeAction(widget.onTogglePinned),
-                              ),
-                              const SizedBox(width: _actionGap),
-                              _TaskSwipeActionButton(
-                                label: '复制',
-                                icon: Icons.copy_outlined,
-                                color: AppColors.blue500,
-                                onTap: () => _runSwipeAction(widget.onCopy),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: _actionGap),
-                        // 第二行：2个按钮
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _TaskSwipeActionButton(
-                                label: '编辑',
-                                icon: Icons.edit_outlined,
-                                color: AppColors.slate500,
-                                onTap: () => _runSwipeAction(widget.onEdit),
-                              ),
-                              const SizedBox(width: _actionGap),
-                              _TaskSwipeActionButton(
-                                label: '删除',
-                                icon: Icons.delete_outline,
-                                color: AppColors.red500,
-                                onTap: () => _runSwipeAction(widget.onDelete),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _TaskSwipeActionButton(
+                      label: task.isDisabled ? '启用' : '禁用',
+                      icon: task.isDisabled
+                          ? Icons.play_circle_outline
+                          : Icons.pause_circle_outline,
+                      color: task.isDisabled
+                          ? AppColors.primary
+                          : AppColors.slate500,
+                      onTap: () => _runSwipeAction(widget.onToggleEnabled),
                     ),
-                  ),
+                    const SizedBox(width: _actionGap),
+                    _TaskSwipeActionButton(
+                      label: task.isPinned ? '取消' : '置顶',
+                      icon: task.isPinned
+                          ? Icons.push_pin_outlined
+                          : Icons.push_pin,
+                      color: AppColors.amber500,
+                      onTap: () => _runSwipeAction(widget.onTogglePinned),
+                    ),
+                    const SizedBox(width: _actionGap),
+                    _TaskSwipeActionButton(
+                      label: '复制',
+                      icon: Icons.copy_outlined,
+                      color: AppColors.blue500,
+                      onTap: () => _runSwipeAction(widget.onCopy),
+                    ),
+                    const SizedBox(width: _actionGap),
+                    _TaskSwipeActionButton(
+                      label: '编辑',
+                      icon: Icons.edit_outlined,
+                      color: AppColors.slate500,
+                      onTap: () => _runSwipeAction(widget.onEdit),
+                    ),
+                    const SizedBox(width: _actionGap),
+                    _TaskSwipeActionButton(
+                      label: '删除',
+                      icon: Icons.delete_outline,
+                      color: AppColors.red500,
+                      onTap: () => _runSwipeAction(widget.onDelete),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1942,6 +1806,7 @@ class _TaskCardState extends State<_TaskCard> {
               onHorizontalDragUpdate: widget.selectionMode
                   ? null
                   : (details) {
+                      // 左滑露出右侧次要操作；关闭时也限制在卡片内处理，避免和系统返回手势抢动作。
                       final nextOffset = (_dragOffset + details.delta.dx)
                           .clamp(-_actionsWidth, 0.0)
                           .toDouble();
@@ -2400,6 +2265,7 @@ class _TaskSubscriptionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 订阅标签只做轻量展示，不再做成大胶囊，避免任务卡片显得拥挤。
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
@@ -3347,4 +3213,3 @@ class _GroupPopupMenu extends StatelessWidget {
     );
   }
 }
-
