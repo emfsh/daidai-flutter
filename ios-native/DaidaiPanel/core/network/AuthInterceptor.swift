@@ -41,7 +41,14 @@ final class AuthInterceptor: NSObject, URLSessionTaskDelegate {
             return (data, response)
         }
 
-        if httpResponse.statusCode == 401 {
+        // Skip 401 interception for login/refresh/init endpoints
+        let path = request.url?.path ?? ""
+        let isAuthEndpoint = path.contains("/auth/login") ||
+                             path.contains("/auth/refresh") ||
+                             path.contains("/auth/init") ||
+                             path.contains("/auth/check-init")
+
+        if httpResponse.statusCode == 401 && !isAuthEndpoint {
             return try await handle401(originalRequest: modifiedRequest, session: session)
         }
 

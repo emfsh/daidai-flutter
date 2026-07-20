@@ -19,14 +19,43 @@ final class AuthService {
     }
 
     func login(username: String, password: String, captcha: String? = nil) async throws -> User {
-        let result: ApiResponse<LoginData> = try await api.login(username: username, password: password, captcha: captcha)
-        guard let data = result.data else {
+        // Use raw request to handle non-standard response format
+        var body: [String: Any] = ["username": username, "password": password]
+        if let captcha { body["captcha"] = captcha }
+
+        let (data, response) = try await api.requestRaw(api.endpoints.login, method: "POST", body: body)
+
+        guard response.statusCode == 200 else {
+            // Parse error message from server response
+            let message: String
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                message = json["error"] as? String
+                    ?? json["message"] as? String
+                    ?? "登录失败 (\(response.statusCode))"
+            } else {
+                message = "登录失败 (\(response.statusCode))"
+            }
+            throw ApiError.serverError(response.statusCode, message)
+        }
+
+        // Parse success response - server returns {"access_token": "...", "refresh_token": "..."}
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw ApiError.invalidResponse
         }
 
-        keychain.saveAuthTokens(accessToken: data.accessToken, refreshToken: data.refreshToken)
-        keychain.authUser = data.user
-        return data.user
+        let accessToken = json["access_token"] as? String ?? ""
+        let refreshToken = json["refresh_token"] as? String ?? ""
+
+        guard !accessToken.isEmpty else {
+            throw ApiError.invalidResponse
+        }
+
+        keychain.saveAuthTokens(accessToken: accessToken, refreshToken: refreshToken)
+
+        // Fetch user info
+        let user = try await getUser()
+        keychain.authUser = user
+        return user
     }
 
     func logout() async {

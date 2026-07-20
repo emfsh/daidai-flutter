@@ -44,7 +44,15 @@ final class ApiService: ObservableObject {
         guard let httpResponse = response as? HTTPURLResponse else { throw ApiError.invalidResponse }
 
         guard httpResponse.statusCode == 200 else {
-            let message = String(data: data, encoding: .utf8) ?? "Unknown error"
+            // Try to extract error message from server response
+            let message: String
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                message = json["error"] as? String
+                    ?? json["message"] as? String
+                    ?? "请求失败 (\(httpResponse.statusCode))"
+            } else {
+                message = String(data: data, encoding: .utf8) ?? "请求失败 (\(httpResponse.statusCode))"
+            }
             throw ApiError.serverError(httpResponse.statusCode, message)
         }
 
@@ -92,7 +100,19 @@ final class ApiService: ObservableObject {
     // MARK: - Auth
 
     func checkInit() async throws -> ApiResponse<CheckInitData> {
-        try await get(endpoints.checkInit)
+        let (data, response) = try await requestRaw(endpoints.checkInit)
+        guard response.statusCode == 200 else {
+            throw ApiError.serverError(response.statusCode, "Check init failed")
+        }
+        // Server returns {"need_init": false} - parse directly
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let needInit = json["need_init"] as? Bool {
+            // Wrap in ApiResponse format for compatibility
+            let inner = CheckInitData(initialized: !needInit)
+            return ApiResponse(code: 200, message: "ok", data: inner)
+        }
+        // Fallback: try standard ApiResponse decode
+        return try decoder.decode(ApiResponse<CheckInitData>.self, from: data)
     }
 
     func initAdmin(username: String, password: String) async throws -> ApiResponse<EmptyData> {

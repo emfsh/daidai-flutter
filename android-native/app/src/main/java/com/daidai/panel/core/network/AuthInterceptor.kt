@@ -35,7 +35,14 @@ class AuthInterceptor @Inject constructor(
 
         val response = chain.proceed(authenticatedRequest)
 
-        if (response.code == 401) {
+        // Skip 401 interception for login/refresh/init endpoints
+        val path = originalRequest.url.encodedPath
+        val isAuthEndpoint = path.contains("/auth/login") ||
+                             path.contains("/auth/refresh") ||
+                             path.contains("/auth/init") ||
+                             path.contains("/auth/check-init")
+
+        if (response.code == 401 && !isAuthEndpoint) {
             synchronized(this) {
                 return handle401Response(chain, originalRequest, response)
             }

@@ -4,6 +4,8 @@ import com.daidai.panel.core.network.NetworkModule
 import com.daidai.panel.core.storage.SecureStorage
 import com.daidai.panel.data.model.ApiResponse
 import com.daidai.panel.data.model.User
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,9 +18,19 @@ class AuthRepository @Inject constructor(
         return try {
             val response = networkModule.getApiService().checkInit()
             if (response.isSuccessful) {
-                Result.success(response.body()?.data ?: false)
+                val responseBody = response.body()?.string()
+                // Server returns {"need_init": false}
+                val needInit = try {
+                    val gson = Gson()
+                    val mapType = object : TypeToken<Map<String, Any?>>() {}.type
+                    val map: Map<String, Any?> = gson.fromJson(responseBody, mapType)
+                    map["need_init"] as? Boolean ?: false
+                } catch (_: Exception) {
+                    false
+                }
+                Result.success(needInit)
             } else {
-                Result.failure(Exception(response.body()?.message ?: "Check init failed"))
+                Result.failure(Exception("Check init failed"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -57,16 +69,39 @@ class AuthRepository @Inject constructor(
             totpCode?.let { body["totp_code"] = it }
 
             val response = networkModule.getApiService().login(body)
-            if (response.isSuccessful && response.body()?.isSuccess == true) {
-                val data = response.body()?.data
-                val accessToken = data?.get("access_token") as? String ?: ""
-                val refreshToken = data?.get("refresh_token") as? String ?: ""
+            val responseBody = response.body()?.string()
+
+            if (response.isSuccessful && responseBody != null) {
+                // Parse the login success response
+                val gson = Gson()
+                val mapType = object : TypeToken<Map<String, Any?>>() {}.type
+                val map: Map<String, Any?> = gson.fromJson(responseBody, mapType)
+                val accessToken = map["access_token"] as? String ?: ""
+                val refreshToken = map["refresh_token"] as? String ?: ""
+
+                if (accessToken.isEmpty()) {
+                    return Result.failure(Exception("登录响应缺少 access_token"))
+                }
+
                 secureStorage.saveTokens(accessToken, refreshToken)
                 val user = getUser()
                 user.onSuccess { return Result.success(it) }
-                Result.failure(user.exceptionOrNull() ?: Exception("Failed to get user"))
+                Result.failure(user.exceptionOrNull() ?: Exception("获取用户信息失败"))
             } else {
-                Result.failure(Exception(response.body()?.message ?: "Login failed"))
+                // Parse error response - server returns {"error": "...", ...}
+                val errorMessage = try {
+                    if (responseBody != null) {
+                        val gson = Gson()
+                        val mapType = object : TypeToken<Map<String, Any?>>() {}.type
+                        val map: Map<String, Any?> = gson.fromJson(responseBody, mapType)
+                        map["error"] as? String ?: map["message"] as? String ?: "登录失败"
+                    } else {
+                        "登录失败 (${response.code()})"
+                    }
+                } catch (_: Exception) {
+                    "登录失败 (${response.code()})"
+                }
+                Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.failure(e)

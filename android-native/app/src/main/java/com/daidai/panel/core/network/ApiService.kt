@@ -12,13 +12,13 @@ interface ApiService {
     // ==================== Auth ====================
 
     @GET(ApiEndpoints.AUTH_CHECK_INIT)
-    suspend fun checkInit(): Response<ApiResponse<Boolean>>
+    suspend fun checkInit(): Response<ResponseBody>
 
     @POST(ApiEndpoints.AUTH_INIT)
     suspend fun initAdmin(@Body body: Map<String, String>): Response<ApiResponse<Any>>
 
     @POST(ApiEndpoints.AUTH_LOGIN)
-    suspend fun login(@Body body: Map<String, String>): Response<ApiResponse<Map<String, Any>>>
+    suspend fun login(@Body body: Map<String, String>): Response<ResponseBody>
 
     @POST(ApiEndpoints.AUTH_LOGOUT)
     suspend fun logout(): Response<ApiResponse<Any>>
@@ -38,7 +38,7 @@ interface ApiService {
     // ==================== System ====================
 
     @GET(ApiEndpoints.SYSTEM_HEALTH)
-    suspend fun health(): Response<ApiResponse<Any>>
+    suspend fun health(): Response<ResponseBody>
 
     @GET(ApiEndpoints.SYSTEM_VERSION)
     suspend fun version(): Response<ApiResponse<Map<String, Any>>>
