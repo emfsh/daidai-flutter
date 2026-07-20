@@ -42,7 +42,7 @@ struct DashboardView: View {
             )) {
                 Button("确定") { viewModel.error = nil }
                 Button("重试") {
-                    Task { await viewModel.load() }
+                    Swift.Task { await viewModel.load() }
                 }
             } message: {
                 Text(viewModel.error ?? "")
@@ -70,9 +70,9 @@ struct DashboardView: View {
                                 .font(.caption2)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(Color(AppColors.primary).opacity(0.1))
+                                .background(AppColors.primary.opacity(0.1))
                                 .clipShape(Capsule())
-                                .foregroundColor(Color(AppColors.primary))
+                                .foregroundColor(AppColors.primary)
                         }
                     }
 
@@ -126,13 +126,13 @@ struct DashboardView: View {
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
-        .overlay(Circle().stroke(Color(AppColors.glassCardBorder), lineWidth: 1))
+        .overlay(Circle().stroke(AppColors.glassCardBorder, lineWidth: 1))
     }
 
     private func fallbackAvatar(size: CGFloat) -> some View {
         Image(systemName: "person.circle.fill")
             .font(.system(size: size))
-            .foregroundColor(Color(AppColors.primary).opacity(0.6))
+            .foregroundColor(AppColors.primary.opacity(0.6))
     }
 
     // MARK: - Resources
@@ -160,10 +160,10 @@ struct DashboardView: View {
                     GridItem(.flexible()),
                     GridItem(.flexible())
                 ], spacing: 12) {
-                    statItem(count: viewModel.taskCount, label: "总任务", color: Color(AppColors.info))
-                    statItem(count: viewModel.runningTaskCount, label: "运行中", color: Color(AppColors.success))
-                    statItem(count: viewModel.todayRunCount, label: "今日执行", color: Color(AppColors.primary))
-                    statItem(count: viewModel.todayFailCount, label: "今日失败", color: Color(AppColors.error))
+                    statItem(count: viewModel.taskCount, label: "总任务", color: AppColors.info)
+                    statItem(count: viewModel.runningTaskCount, label: "运行中", color: AppColors.success)
+                    statItem(count: viewModel.todayRunCount, label: "今日执行", color: AppColors.primary)
+                    statItem(count: viewModel.todayFailCount, label: "今日失败", color: AppColors.error)
                 }
 
                 Divider()
@@ -225,22 +225,22 @@ struct DashboardView: View {
                     GridItem(.flexible()),
                     GridItem(.flexible())
                 ], spacing: 12) {
-                    quickAction(icon: "plus.circle", title: "新建任务", color: Color(AppColors.primary)) {
+                    quickAction(icon: "plus.circle", title: "新建任务", color: AppColors.primary) {
                         navManager.navigate(to: .taskForm(taskId: nil))
                     }
-                    quickAction(icon: "terminal", title: "查看日志", color: Color(AppColors.blue500)) {
+                    quickAction(icon: "terminal", title: "查看日志", color: AppColors.blue500) {
                         navManager.navigate(to: .logs)
                     }
-                    quickAction(icon: "key", title: "环境变量", color: Color(AppColors.purple500)) {
+                    quickAction(icon: "key", title: "环境变量", color: AppColors.purple500) {
                         navManager.navigate(to: .envs)
                     }
-                    quickAction(icon: "arrow.triangle.2.circlepath", title: "订阅管理", color: Color(AppColors.amber500)) {
+                    quickAction(icon: "arrow.triangle.2.circlepath", title: "订阅管理", color: AppColors.amber500) {
                         navManager.navigate(to: .subscriptions)
                     }
-                    quickAction(icon: "shippingbox", title: "依赖管理", color: Color(AppColors.slate500)) {
+                    quickAction(icon: "shippingbox", title: "依赖管理", color: AppColors.slate500) {
                         navManager.navigate(to: .deps)
                     }
-                    quickAction(icon: "gearshape", title: "系统设置", color: Color(AppColors.slate600)) {
+                    quickAction(icon: "gearshape", title: "系统设置", color: AppColors.slate600) {
                         navManager.navigate(to: .systemSettings)
                     }
                 }
@@ -260,7 +260,7 @@ struct DashboardView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(Color(AppColors.glassBg))
+            .background(AppColors.glassBg)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .buttonStyle(.plain)

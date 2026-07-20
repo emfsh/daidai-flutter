@@ -45,7 +45,7 @@ struct OpenApiView: View {
             Button("创建") {
                 let name = newAppName
                 newAppName = ""
-                Task { try? await viewModel.create(name: name) }
+                Swift.Task { try? await viewModel.create(name: name) }
             }
             .disabled(newAppName.isEmpty)
         }
@@ -56,7 +56,7 @@ struct OpenApiView: View {
             Button("取消", role: .cancel) {}
             Button("删除", role: .destructive) {
                 if let app = appToDelete {
-                    Task { try? await viewModel.delete(app.id) }
+                    Swift.Task { try? await viewModel.delete(app.id) }
                 }
             }
         } message: {
@@ -68,13 +68,13 @@ struct OpenApiView: View {
         VStack(spacing: 16) {
             Image(systemName: "point.3.connected.trianglepath.dotted")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无 API 应用")
                 .font(.title3)
                 .foregroundColor(.secondary)
             Button("创建应用") { showAddSheet = true }
                 .buttonStyle(.borderedProminent)
-                .tint(Color(AppColors.primary))
+                .tint(AppColors.primary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -90,19 +90,19 @@ struct OpenApiView: View {
                         } label: {
                             Label("删除", systemImage: "trash.fill")
                         }
-                        .tint(Color(AppColors.error))
+                        .tint(AppColors.error)
 
                         Button {
-                            Task { try? await viewModel.toggle(app) }
+                            Swift.Task { try? await viewModel.toggle(app) }
                         } label: {
                             Label(app.enabled ? "禁用" : "启用",
                                   systemImage: app.enabled ? "pause.circle.fill" : "play.circle.fill")
                         }
-                        .tint(app.enabled ? Color(AppColors.warning) : Color(AppColors.primary))
+                        .tint(app.enabled ? AppColors.warning : AppColors.primary)
                     }
                     .contextMenu {
                         Button {
-                            Task {
+                            Swift.Task {
                                 await viewModel.viewSecret(app.id)
                                 secretTitle = "查看密钥"
                                 showSecretSheet = true
@@ -111,7 +111,7 @@ struct OpenApiView: View {
                             Label("查看密钥", systemImage: "eye.fill")
                         }
                         Button {
-                            Task {
+                            Swift.Task {
                                 try? await viewModel.resetSecret(app.id)
                                 secretTitle = "新密钥"
                                 showSecretSheet = true
@@ -121,7 +121,7 @@ struct OpenApiView: View {
                         }
                         Divider()
                         Button {
-                            Task { try? await viewModel.toggle(app) }
+                            Swift.Task { try? await viewModel.toggle(app) }
                         } label: {
                             Label(app.enabled ? "禁用" : "启用", systemImage: app.enabled ? "pause" : "play")
                         }
@@ -138,7 +138,7 @@ struct OpenApiView: View {
             VStack(spacing: 20) {
                 Image(systemName: "key.fill")
                     .font(.system(size: 40))
-                    .foregroundColor(Color(AppColors.primary))
+                    .foregroundColor(AppColors.primary)
 
                 Text(secretTitle)
                     .font(.headline)
@@ -147,8 +147,8 @@ struct OpenApiView: View {
                     Text(secret)
                         .font(.system(.body, design: .monospaced))
                         .padding()
-                        .background(Color(AppColors.termBg))
-                        .foregroundColor(Color(AppColors.termFg))
+                        .background(AppColors.termBg)
+                        .foregroundColor(AppColors.termFg)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .textSelection(.enabled)
 
@@ -156,7 +156,7 @@ struct OpenApiView: View {
                         UIPasteboard.general.string = secret
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(Color(AppColors.primary))
+                    .tint(AppColors.primary)
                 } else {
                     Text("无法获取密钥")
                         .foregroundColor(.secondary)
@@ -186,9 +186,9 @@ struct OpenApiAppRow: View {
         HStack(spacing: 12) {
             Image(systemName: "point.3.connected.trianglepath.dotted")
                 .font(.title3)
-                .foregroundColor(Color(AppColors.primary))
+                .foregroundColor(AppColors.primary)
                 .frame(width: 36, height: 36)
-                .background(Color(AppColors.primary).opacity(0.1))
+                .background(AppColors.primary.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -208,16 +208,16 @@ struct OpenApiAppRow: View {
                     .font(.caption2)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
-                    .background(Color(AppColors.primary).opacity(0.15))
-                    .foregroundColor(Color(AppColors.primary))
+                    .background(AppColors.primary.opacity(0.15))
+                    .foregroundColor(AppColors.primary)
                     .clipShape(Capsule())
             } else {
                 Text("禁用")
                     .font(.caption2)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
-                    .background(Color(AppColors.disabled).opacity(0.15))
-                    .foregroundColor(Color(AppColors.disabled))
+                    .background(AppColors.disabled.opacity(0.15))
+                    .foregroundColor(AppColors.disabled)
                     .clipShape(Capsule())
             }
         }

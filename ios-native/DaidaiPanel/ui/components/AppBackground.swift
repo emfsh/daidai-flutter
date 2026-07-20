@@ -40,15 +40,15 @@ struct AppBackground: View {
                     // Glass mode: gradient background
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            Color(AppColors.glassBg).opacity(0.8),
-                            Color(AppColors.glassBg).opacity(0.6)
+                            AppColors.glassBg.opacity(0.8),
+                            AppColors.glassBg.opacity(0.6)
                         ]),
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 } else {
                     // Classic mode: solid background
-                    Color(AppColors.glassBg)
+                    AppColors.glassBg
                 }
             }
         }

@@ -144,7 +144,7 @@ struct ServerConfigPage: View {
             Spacer()
             Image(systemName: "server.rack")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无服务器")
                 .font(.headline)
                 .foregroundColor(.secondary)
@@ -203,14 +203,14 @@ struct ServerConfigPage: View {
                             .disableAutocorrection(true)
 
                         Button {
-                            Task { await viewModel.healthCheck(url: viewModel.newURL) }
+                            Swift.Task { await viewModel.healthCheck(url: viewModel.newURL) }
                         } label: {
                             if viewModel.isChecking {
                                 ProgressView()
                                     .scaleEffect(0.8)
                             } else {
                                 Image(systemName: "heart.text.square")
-                                    .foregroundColor(Color(AppColors.primary))
+                                    .foregroundColor(AppColors.primary)
                             }
                         }
                         .disabled(viewModel.newURL.isEmpty || viewModel.isChecking)
@@ -219,10 +219,10 @@ struct ServerConfigPage: View {
                     if let result = viewModel.healthCheckResult {
                         HStack(spacing: 4) {
                             Image(systemName: result ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundColor(result ? Color(AppColors.success) : Color(AppColors.error))
+                                .foregroundColor(result ? AppColors.success : AppColors.error)
                             Text(result ? "连接正常" : "连接失败")
                                 .font(.caption)
-                                .foregroundColor(result ? Color(AppColors.success) : Color(AppColors.error))
+                                .foregroundColor(result ? AppColors.success : AppColors.error)
                         }
                     }
                 }
@@ -247,7 +247,7 @@ struct ServerConfigPage: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(Color(AppColors.primary))
+                    .tint(AppColors.primary)
                     .disabled(viewModel.newURL.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
@@ -269,9 +269,9 @@ struct ServerRow: View {
             HStack(spacing: 12) {
                 Image(systemName: "server.rack")
                     .font(.system(size: 20))
-                    .foregroundColor(Color(AppColors.primary))
+                    .foregroundColor(AppColors.primary)
                     .frame(width: 36, height: 36)
-                    .background(Color(AppColors.primary).opacity(0.1))
+                    .background(AppColors.primary.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -307,11 +307,11 @@ struct ServerRow: View {
                 .scaleEffect(0.7)
         } else if let healthy = isHealthy {
             Circle()
-                .fill(healthy ? Color(AppColors.success) : Color(AppColors.error))
+                .fill(healthy ? AppColors.success : AppColors.error)
                 .frame(width: 8, height: 8)
         } else {
             Circle()
-                .fill(Color(AppColors.disabled))
+                .fill(AppColors.disabled)
                 .frame(width: 8, height: 8)
         }
     }

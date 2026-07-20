@@ -57,7 +57,7 @@ struct SearchBar: View {
                     onCancelButtonClicked?()
                 }
                 .font(.body)
-                .foregroundColor(Color(AppColors.primary))
+                .foregroundColor(AppColors.primary)
                 .buttonStyle(PlainButtonStyle())
                 .transition(.move(edge: .trailing).combined(with: .opacity))
             }
@@ -73,14 +73,14 @@ struct SearchBar: View {
                 } else {
                     // Classic mode with filled style
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(AppColors.glassCard))
+                        .fill(AppColors.glassCard)
                 }
             }
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(
-                    isFocused ? Color(AppColors.primary) : Color(AppColors.glassCardBorder),
+                    isFocused ? AppColors.primary : AppColors.glassCardBorder,
                     lineWidth: isFocused ? 1.5 : 0.5
                 )
         )

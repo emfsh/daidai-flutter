@@ -36,7 +36,7 @@ struct MainTabView: View {
                     Label("更多", systemImage: "ellipsis")
                 }
         }
-        .tint(Color(AppColors.primary))
+        .tint(AppColors.primary)
         .onAppear {
             configureTabBarAppearance()
         }
@@ -62,9 +62,9 @@ struct MainTabView: View {
             .foregroundColor: UIColor.secondaryLabel,
             .font: UIFont.systemFont(ofSize: 10, weight: .regular)
         ]
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color(AppColors.primary))
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(AppColors.primary)
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: UIColor(Color(AppColors.primary)),
+            .foregroundColor: UIColor(AppColors.primary),
             .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
         ]
 

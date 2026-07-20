@@ -28,7 +28,7 @@ final class TaskViewModel: ObservableObject {
 
     func load() async {
         loadTask?.cancel()
-        loadTask = Task {
+        loadTask = Swift.Task {
             isLoading = true
             error = nil
             currentPage = 1

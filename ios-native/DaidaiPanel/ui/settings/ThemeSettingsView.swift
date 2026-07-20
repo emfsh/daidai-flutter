@@ -21,7 +21,7 @@ struct ThemeSettingsView: View {
         .navigationTitle("主题设置")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedPhoto) { _, newItem in
-            Task { await loadImage(from: newItem) }
+            Swift.Task { await loadImage(from: newItem) }
         }
     }
 
@@ -55,7 +55,7 @@ struct ThemeSettingsView: View {
                     Text("玻璃模式")
                 } icon: {
                     Image(systemName: "sparkles")
-                        .foregroundColor(Color(AppColors.primary))
+                        .foregroundColor(AppColors.primary)
                 }
             }
         } header: {
@@ -81,7 +81,7 @@ struct ThemeSettingsView: View {
                         showClearImageAlert = true
                     }
                     .font(.subheadline)
-                    .foregroundColor(Color(AppColors.error))
+                    .foregroundColor(AppColors.error)
                 }
             } else {
                 PhotosPicker(selection: $selectedPhoto, matching: .images) {
@@ -124,7 +124,7 @@ struct ThemeSettingsView: View {
                     in: 0...50,
                     step: 1
                 )
-                .tint(Color(AppColors.primary))
+                .tint(AppColors.primary)
             }
         } header: {
             Text("模糊")

@@ -62,7 +62,7 @@ struct TaskListView: View {
             }
             .alert("错误", isPresented: $showError) {
                 Button("确定") { viewModel.error = nil }
-                Button("重试") { Task { await viewModel.load() } }
+                Button("重试") { Swift.Task { await viewModel.load() } }
             } message: {
                 Text(viewModel.error ?? "")
             }
@@ -82,13 +82,13 @@ struct TaskListView: View {
                 .textFieldStyle(.plain)
                 .onSubmit {
                     viewModel.keyword = searchText
-                    Task { await viewModel.load() }
+                    Swift.Task { await viewModel.load() }
                 }
             if !searchText.isEmpty {
                 Button {
                     searchText = ""
                     viewModel.keyword = ""
-                    Task { await viewModel.load() }
+                    Swift.Task { await viewModel.load() }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.secondary)
@@ -101,11 +101,11 @@ struct TaskListView: View {
                 if themeManager.glassMode {
                     RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial)
                 } else {
-                    RoundedRectangle(cornerRadius: 12).fill(Color(AppColors.glassCard))
+                    RoundedRectangle(cornerRadius: 12).fill(AppColors.glassCard)
                 }
             }
         )
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppColors.glassCardBorder, lineWidth: 0.5))
         .padding(.horizontal, 16)
         .padding(.top, 8)
     }
@@ -118,7 +118,7 @@ struct TaskListView: View {
                 ForEach(statusFilters, id: \.value) { filter in
                     Button {
                         viewModel.statusFilter = filter.value
-                        Task { await viewModel.load() }
+                        Swift.Task { await viewModel.load() }
                     } label: {
                         Text(filter.label)
                             .font(.subheadline)
@@ -128,7 +128,7 @@ struct TaskListView: View {
                             .foregroundColor(viewModel.statusFilter == filter.value ? .white : .primary)
                             .background(
                                 Capsule()
-                                    .fill(viewModel.statusFilter == filter.value ? Color(AppColors.primary) : Color(AppColors.glassBg))
+                                    .fill(viewModel.statusFilter == filter.value ? AppColors.primary : AppColors.glassBg)
                             )
                     }
                     .buttonStyle(.plain)
@@ -196,7 +196,7 @@ struct TaskListView: View {
                     }
                 } label: {
                     Image(systemName: selectedIds.contains(task.id) ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(selectedIds.contains(task.id) ? Color(AppColors.primary) : .secondary)
+                        .foregroundColor(selectedIds.contains(task.id) ? AppColors.primary : .secondary)
                         .font(.title3)
                 }
                 .buttonStyle(.plain)
@@ -208,7 +208,7 @@ struct TaskListView: View {
                         if task.isPinned {
                             Image(systemName: "pin.fill")
                                 .font(.caption2)
-                                .foregroundColor(Color(AppColors.amber500))
+                                .foregroundColor(AppColors.amber500)
                         }
                         Text(task.name)
                             .font(.headline)
@@ -242,8 +242,8 @@ struct TaskListView: View {
                                 .font(.system(size: 10))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(Color(AppColors.blue100))
-                                .foregroundColor(Color(AppColors.blue600))
+                                .background(AppColors.blue100)
+                                .foregroundColor(AppColors.blue600)
                                 .clipShape(Capsule())
                         }
                     }
@@ -254,7 +254,7 @@ struct TaskListView: View {
 
     private func swipeRunButton(_ task: Task) -> some View {
         Button {
-            Task {
+            Swift.Task {
                 if task.isRunning {
                     try? await viewModel.stopTask(task.id)
                 } else {
@@ -264,12 +264,12 @@ struct TaskListView: View {
         } label: {
             Label(task.isRunning ? "停止" : "运行", systemImage: task.isRunning ? "stop.fill" : "play.fill")
         }
-        .tint(task.isRunning ? Color(AppColors.warning) : Color(AppColors.success))
+        .tint(task.isRunning ? AppColors.warning : AppColors.success)
     }
 
     private func swipeEnableButton(_ task: Task) -> some View {
         Button {
-            Task {
+            Swift.Task {
                 if task.isEnabled || task.isRunning {
                     try? await viewModel.disableTask(task.id)
                 } else {
@@ -282,12 +282,12 @@ struct TaskListView: View {
                 systemImage: task.isEnabled || task.isRunning ? "pause.circle" : "checkmark.circle"
             )
         }
-        .tint(task.isEnabled || task.isRunning ? Color(AppColors.slate400) : Color(AppColors.primary))
+        .tint(task.isEnabled || task.isRunning ? AppColors.slate400 : AppColors.primary)
     }
 
     private func swipeDeleteButton(_ task: Task) -> some View {
         Button(role: .destructive) {
-            Task { try? await viewModel.deleteTask(task.id) }
+            Swift.Task { try? await viewModel.deleteTask(task.id) }
         } label: {
             Label("删除", systemImage: "trash")
         }
@@ -303,28 +303,28 @@ struct TaskListView: View {
             Divider().frame(height: 20)
 
             Button("运行") {
-                Task { try? await viewModel.batchRun(Array(selectedIds)) }
+                Swift.Task { try? await viewModel.batchRun(Array(selectedIds)) }
             }
             .font(.subheadline)
-            .foregroundColor(Color(AppColors.success))
+            .foregroundColor(AppColors.success)
 
             Button("启用") {
-                Task { try? await viewModel.batchEnable(Array(selectedIds)) }
+                Swift.Task { try? await viewModel.batchEnable(Array(selectedIds)) }
             }
             .font(.subheadline)
-            .foregroundColor(Color(AppColors.primary))
+            .foregroundColor(AppColors.primary)
 
             Button("禁用") {
-                Task { try? await viewModel.batchDisable(Array(selectedIds)) }
+                Swift.Task { try? await viewModel.batchDisable(Array(selectedIds)) }
             }
             .font(.subheadline)
             .foregroundColor(.secondary)
 
             Button("删除") {
-                Task { try? await viewModel.batchDelete(Array(selectedIds)) }
+                Swift.Task { try? await viewModel.batchDelete(Array(selectedIds)) }
             }
             .font(.subheadline)
-            .foregroundColor(Color(AppColors.error))
+            .foregroundColor(AppColors.error)
         }
     }
 
@@ -333,7 +333,7 @@ struct TaskListView: View {
             Spacer()
             Image(systemName: "clock.badge.questionmark")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无任务")
                 .font(.headline)
                 .foregroundColor(.secondary)
@@ -341,7 +341,7 @@ struct TaskListView: View {
                 navManager.navigate(to: .taskForm(taskId: nil))
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color(AppColors.primary))
+            .tint(AppColors.primary)
             Spacer()
         }
         .frame(maxWidth: .infinity)

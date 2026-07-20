@@ -31,7 +31,7 @@ struct SponsorView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 36))
-                        .foregroundColor(Color(AppColors.error))
+                        .foregroundColor(AppColors.error)
                     Text("累计赞助")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -75,7 +75,7 @@ struct SponsorRow: View {
         HStack(spacing: 12) {
             Image(systemName: "heart.circle.fill")
                 .font(.title2)
-                .foregroundColor(Color(AppColors.error).opacity(0.7))
+                .foregroundColor(AppColors.error.opacity(0.7))
                 .frame(width: 36, height: 36)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -86,7 +86,7 @@ struct SponsorRow: View {
                     Text("¥\(sponsor.amount)")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundColor(Color(AppColors.primary))
+                        .foregroundColor(AppColors.primary)
                 }
                 if let message = sponsor.message, !message.isEmpty {
                     Text(message)
@@ -97,7 +97,7 @@ struct SponsorRow: View {
                 if let date = sponsor.date {
                     Text(date)
                         .font(.caption2)
-                        .foregroundColor(Color(AppColors.slate400))
+                        .foregroundColor(AppColors.slate400)
                 }
             }
         }

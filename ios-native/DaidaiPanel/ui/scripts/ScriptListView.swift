@@ -50,7 +50,7 @@ struct ScriptListView: View {
             TextField("目录名称", text: $newDirName)
             Button("取消", role: .cancel) { newDirName = "" }
             Button("创建") {
-                Task {
+                Swift.Task {
                     try? await viewModel.createDirectory(path: newDirName)
                     newDirName = ""
                 }
@@ -60,7 +60,7 @@ struct ScriptListView: View {
             TextField("新名称", text: $renameNewName)
             Button("取消", role: .cancel) {}
             Button("确认") {
-                Task {
+                Swift.Task {
                     let parent = (renameTarget as NSString).deletingLastPathComponent
                     let newPath = (parent as NSString).appendingPathComponent(renameNewName)
                     try? await viewModel.rename(from: renameTarget, to: newPath)
@@ -70,7 +70,7 @@ struct ScriptListView: View {
         .alert("确认删除", isPresented: $showDeleteConfirm) {
             Button("取消", role: .cancel) {}
             Button("删除", role: .destructive) {
-                Task { try? await viewModel.delete(paths: pathsToDelete) }
+                Swift.Task { try? await viewModel.delete(paths: pathsToDelete) }
             }
         } message: {
             Text("确定要删除选中的文件吗？此操作不可撤销。")
@@ -81,7 +81,7 @@ struct ScriptListView: View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.fill")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无脚本文件")
                 .font(.title3)
                 .foregroundColor(.secondary)
@@ -135,7 +135,7 @@ struct ScriptNodeRow: View {
                 }
             } label: {
                 Label(node.name, systemImage: "folder.fill")
-                    .foregroundColor(Color(AppColors.blue500))
+                    .foregroundColor(AppColors.blue500)
             }
             .contextMenu {
                 Button { onRename(node.path) } label: {
@@ -191,12 +191,12 @@ struct ScriptNodeRow: View {
     private func fileColor(for name: String) -> Color {
         let ext = (name as NSString).pathExtension.lowercased()
         switch ext {
-        case "sh", "bash": return Color(AppColors.primary)
-        case "py": return Color(AppColors.blue500)
-        case "js", "ts": return Color(AppColors.amber500)
-        case "json": return Color(AppColors.purple500)
-        case "yaml", "yml": return Color(AppColors.red500)
-        default: return Color(AppColors.slate500)
+        case "sh", "bash": return AppColors.primary
+        case "py": return AppColors.blue500
+        case "js", "ts": return AppColors.amber500
+        case "json": return AppColors.purple500
+        case "yaml", "yml": return AppColors.red500
+        default: return AppColors.slate500
         }
     }
 }

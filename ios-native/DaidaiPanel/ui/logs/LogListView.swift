@@ -49,14 +49,14 @@ struct LogListView: View {
             .alert("确认清空", isPresented: $showCleanConfirm) {
                 Button("取消", role: .cancel) {}
                 Button("清空", role: .destructive) {
-                    Task { try? await viewModel.cleanLogs() }
+                    Swift.Task { try? await viewModel.cleanLogs() }
                 }
             } message: {
                 Text("确定要清空所有日志吗？此操作不可恢复。")
             }
             .alert("错误", isPresented: $showError) {
                 Button("确定") { viewModel.error = nil }
-                Button("重试") { Task { await viewModel.load() } }
+                Button("重试") { Swift.Task { await viewModel.load() } }
             } message: {
                 Text(viewModel.error ?? "")
             }
@@ -74,7 +74,7 @@ struct LogListView: View {
                 logRow(log)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
-                            Task { try? await viewModel.deleteLog(log.id) }
+                            Swift.Task { try? await viewModel.deleteLog(log.id) }
                         } label: {
                             Label("删除", systemImage: "trash")
                         }
@@ -141,7 +141,7 @@ struct LogListView: View {
             Spacer()
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无日志")
                 .font(.headline)
                 .foregroundColor(.secondary)

@@ -128,7 +128,7 @@ struct PlaceholderPage: View {
             VStack(spacing: 16) {
                 Image(systemName: icon)
                     .font(.system(size: 48))
-                    .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                    .foregroundColor(AppColors.primary.opacity(0.5))
                 Text(title)
                     .font(.title3)
                     .foregroundColor(.secondary)

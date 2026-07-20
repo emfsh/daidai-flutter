@@ -68,7 +68,7 @@ struct LoginPage: View {
         VStack(spacing: 16) {
             Image(systemName: "server.rack")
                 .font(.system(size: 56))
-                .foregroundColor(Color(AppColors.primary))
+                .foregroundColor(AppColors.primary)
                 .scaleEffect(logoScale)
                 .opacity(logoOpacity)
 
@@ -127,7 +127,7 @@ struct LoginPage: View {
         HStack {
             Image(systemName: "server.rack")
                 .font(.caption)
-                .foregroundColor(Color(AppColors.primary))
+                .foregroundColor(AppColors.primary)
             Text(keychain.serverURL ?? "未配置服务器")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -137,10 +137,10 @@ struct LoginPage: View {
                 navManager.navigate(to: .serverConfig)
             }
             .font(.caption)
-            .foregroundColor(Color(AppColors.primary))
+            .foregroundColor(AppColors.primary)
         }
         .padding(10)
-        .background(Color(AppColors.primary).opacity(0.08))
+        .background(AppColors.primary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -157,11 +157,11 @@ struct LoginPage: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(AppColors.glassBg))
+                .fill(AppColors.glassBg)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5)
+                .stroke(AppColors.glassCardBorder, lineWidth: 0.5)
         )
     }
 
@@ -189,11 +189,11 @@ struct LoginPage: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(AppColors.glassBg))
+                .fill(AppColors.glassBg)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5)
+                .stroke(AppColors.glassCardBorder, lineWidth: 0.5)
         )
     }
 
@@ -209,11 +209,11 @@ struct LoginPage: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(AppColors.glassBg))
+                .fill(AppColors.glassBg)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5)
+                .stroke(AppColors.glassCardBorder, lineWidth: 0.5)
         )
     }
 
@@ -221,31 +221,31 @@ struct LoginPage: View {
         HStack {
             Toggle("记住密码", isOn: $rememberPassword)
                 .font(.subheadline)
-                .tint(Color(AppColors.primary))
+                .tint(AppColors.primary)
             Spacer()
             Toggle("自动登录", isOn: $autoLogin)
                 .font(.subheadline)
-                .tint(Color(AppColors.primary))
+                .tint(AppColors.primary)
         }
     }
 
     private func errorBanner(_ message: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(Color(AppColors.error))
+                .foregroundColor(AppColors.error)
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(Color(AppColors.error))
+                .foregroundColor(AppColors.error)
         }
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(AppColors.red50))
+        .background(AppColors.red50)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private var loginButton: some View {
         Button {
-            Task { await performLogin() }
+            Swift.Task { await performLogin() }
         } label: {
             HStack {
                 if isLoading {
@@ -259,7 +259,7 @@ struct LoginPage: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .foregroundColor(.white)
-            .background(Color(AppColors.primary))
+            .background(AppColors.primary)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .disabled(isLoading || username.isEmpty || password.isEmpty)
@@ -274,7 +274,7 @@ struct LoginPage: View {
                 VStack(spacing: 8) {
                     Image(systemName: "person.badge.shield.checkmark")
                         .font(.system(size: 40))
-                        .foregroundColor(Color(AppColors.primary))
+                        .foregroundColor(AppColors.primary)
                     Text("初始化管理员")
                         .font(.title2)
                         .fontWeight(.semibold)
@@ -293,8 +293,8 @@ struct LoginPage: View {
                             .autocapitalization(.none)
                     }
                     .padding(14)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color(AppColors.glassBg)))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5))
+                    .background(RoundedRectangle(cornerRadius: 12).fill(AppColors.glassBg))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppColors.glassCardBorder, lineWidth: 0.5))
 
                     HStack(spacing: 12) {
                         Image(systemName: "lock")
@@ -304,8 +304,8 @@ struct LoginPage: View {
                             .textContentType(.newPassword)
                     }
                     .padding(14)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color(AppColors.glassBg)))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5))
+                    .background(RoundedRectangle(cornerRadius: 12).fill(AppColors.glassBg))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppColors.glassCardBorder, lineWidth: 0.5))
 
                     HStack(spacing: 12) {
                         Image(systemName: "lock.fill")
@@ -315,8 +315,8 @@ struct LoginPage: View {
                             .textContentType(.newPassword)
                     }
                     .padding(14)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color(AppColors.glassBg)))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5))
+                    .background(RoundedRectangle(cornerRadius: 12).fill(AppColors.glassBg))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppColors.glassCardBorder, lineWidth: 0.5))
                 }
 
                 if let error = errorMessage {
@@ -324,7 +324,7 @@ struct LoginPage: View {
                 }
 
                 Button {
-                    Task { await performInitAdmin() }
+                    Swift.Task { await performInitAdmin() }
                 } label: {
                     HStack {
                         if isLoading {
@@ -338,7 +338,7 @@ struct LoginPage: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .foregroundColor(.white)
-                    .background(Color(AppColors.primary))
+                    .background(AppColors.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .disabled(isLoading || initUsername.isEmpty || initPassword.isEmpty)

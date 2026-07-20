@@ -44,7 +44,7 @@ struct NotificationListView: View {
             Button("取消", role: .cancel) {}
             Button("删除", role: .destructive) {
                 if let ch = channelToDelete {
-                    Task { try? await viewModel.delete(ch.id) }
+                    Swift.Task { try? await viewModel.delete(ch.id) }
                 }
             }
         } message: {
@@ -64,13 +64,13 @@ struct NotificationListView: View {
         VStack(spacing: 16) {
             Image(systemName: "bell.slash")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无通知渠道")
                 .font(.title3)
                 .foregroundColor(.secondary)
             Button("添加通知渠道") { showAddSheet = true }
                 .buttonStyle(.borderedProminent)
-                .tint(Color(AppColors.primary))
+                .tint(AppColors.primary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -86,19 +86,19 @@ struct NotificationListView: View {
                         } label: {
                             Label("删除", systemImage: "trash.fill")
                         }
-                        .tint(Color(AppColors.error))
+                        .tint(AppColors.error)
 
                         Button {
-                            Task { try? await viewModel.toggle(channel) }
+                            Swift.Task { try? await viewModel.toggle(channel) }
                         } label: {
                             Label(channel.enabled ? "禁用" : "启用",
                                   systemImage: channel.enabled ? "pause.circle.fill" : "play.circle.fill")
                         }
-                        .tint(channel.enabled ? Color(AppColors.warning) : Color(AppColors.primary))
+                        .tint(channel.enabled ? AppColors.warning : AppColors.primary)
                     }
                     .swipeActions(edge: .leading, allowsFullSwipe: false) {
                         Button {
-                            Task {
+                            Swift.Task {
                                 do {
                                     try await viewModel.test(channel.id)
                                     testMessage = "测试消息已发送"
@@ -110,7 +110,7 @@ struct NotificationListView: View {
                         } label: {
                             Label("测试", systemImage: "paperplane.fill")
                         }
-                        .tint(Color(AppColors.blue500))
+                        .tint(AppColors.blue500)
                     }
                     .onTapGesture { editingChannel = channel }
             }
@@ -129,9 +129,9 @@ struct NotificationChannelRow: View {
         HStack(spacing: 12) {
             Image(systemName: typeIcon)
                 .font(.title3)
-                .foregroundColor(Color(AppColors.primary))
+                .foregroundColor(AppColors.primary)
                 .frame(width: 36, height: 36)
-                .background(Color(AppColors.primary).opacity(0.1))
+                .background(AppColors.primary.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -146,11 +146,11 @@ struct NotificationChannelRow: View {
 
             if channel.enabled {
                 Circle()
-                    .fill(Color(AppColors.primary))
+                    .fill(AppColors.primary)
                     .frame(width: 8, height: 8)
             } else {
                 Circle()
-                    .fill(Color(AppColors.disabled))
+                    .fill(AppColors.disabled)
                     .frame(width: 8, height: 8)
             }
         }
@@ -277,7 +277,7 @@ struct NotificationFormView: View {
             "type": selectedType,
             "config": configValues
         ]
-        Task {
+        Swift.Task {
             do {
                 if let ch = channel {
                     try await viewModel.update(ch.id, body: body)

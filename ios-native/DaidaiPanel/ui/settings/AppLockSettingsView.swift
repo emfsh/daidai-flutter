@@ -55,7 +55,7 @@ struct AppLockSettingsView: View {
                     Text("启用应用锁")
                 } icon: {
                     Image(systemName: "lock.fill")
-                        .foregroundColor(Color(AppColors.primary))
+                        .foregroundColor(AppColors.primary)
                 }
             }
             .onChange(of: lockEnabled) { _, newValue in
@@ -83,14 +83,14 @@ struct AppLockSettingsView: View {
                 } label: {
                     HStack {
                         Image(systemName: type == .password ? "key.fill" : "square.grid.3x3.fill")
-                            .foregroundColor(Color(AppColors.primary))
+                            .foregroundColor(AppColors.primary)
                             .frame(width: 24)
                         Text(type.rawValue)
                             .foregroundColor(.primary)
                         Spacer()
                         if lockType == type {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(Color(AppColors.primary))
+                                .foregroundColor(AppColors.primary)
                         }
                     }
                 }
@@ -107,7 +107,7 @@ struct AppLockSettingsView: View {
                     Text("生物识别解锁")
                 } icon: {
                     Image(systemName: biometricIcon)
-                        .foregroundColor(Color(AppColors.primary))
+                        .foregroundColor(AppColors.primary)
                 }
             }
             .onChange(of: biometricEnabled) { _, newValue in
@@ -185,9 +185,9 @@ struct AppLockSettingsView: View {
                     HStack(spacing: 16) {
                         Image(systemName: type == .password ? "key.fill" : "square.grid.3x3.fill")
                             .font(.title2)
-                            .foregroundColor(Color(AppColors.primary))
+                            .foregroundColor(AppColors.primary)
                             .frame(width: 44, height: 44)
-                            .background(Color(AppColors.primary).opacity(0.1))
+                            .background(AppColors.primary.opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
 
                         VStack(alignment: .leading, spacing: 4) {
@@ -203,7 +203,7 @@ struct AppLockSettingsView: View {
                             .foregroundColor(.secondary)
                     }
                     .padding()
-                    .background(Color(AppColors.glassCard))
+                    .background(AppColors.glassCard)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }
@@ -236,7 +236,7 @@ struct AppLockSettingsView: View {
                 showSetupSheet = false
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color(AppColors.primary))
+            .tint(AppColors.primary)
             .disabled(password.isEmpty || confirmPassword.isEmpty)
 
             Spacer()
@@ -262,7 +262,7 @@ struct AppLockSettingsView: View {
                 showSetupSheet = false
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color(AppColors.primary))
+            .tint(AppColors.primary)
             .disabled(patternPoints.count < 4)
 
             Spacer()
@@ -313,7 +313,7 @@ struct PatternLockView: View {
                 var path = Path()
                 path.move(to: from)
                 path.addLine(to: to)
-                context.stroke(path, with: .color(Color(AppColors.primary).opacity(0.6)), lineWidth: 3)
+                context.stroke(path, with: .color(AppColors.primary.opacity(0.6)), lineWidth: 3)
             }
 
             // Draw line to current touch
@@ -322,14 +322,14 @@ struct PatternLockView: View {
                 var path = Path()
                 path.move(to: from)
                 path.addLine(to: touch)
-                context.stroke(path, with: .color(Color(AppColors.primary).opacity(0.3)), lineWidth: 2)
+                context.stroke(path, with: .color(AppColors.primary.opacity(0.3)), lineWidth: 2)
             }
 
             // Draw dots
             for (index, pos) in dotPositions.enumerated() {
                 let isSelected = points.contains(index)
                 let rect = CGRect(x: pos.x - dotRadius, y: pos.y - dotRadius, width: dotRadius * 2, height: dotRadius * 2)
-                context.fill(Circle().path(in: rect), with: .color(isSelected ? Color(AppColors.primary) : Color(AppColors.slate300)))
+                context.fill(Circle().path(in: rect), with: .color(isSelected ? AppColors.primary : AppColors.slate300))
                 if isSelected {
                     context.fill(Circle().path(in: CGRect(x: pos.x - 4, y: pos.y - 4, width: 8, height: 8)), with: .color(.white))
                 }

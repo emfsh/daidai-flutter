@@ -44,13 +44,13 @@ struct GlassCard<Content: View>: View {
                     } else {
                         // Classic mode with solid background
                         RoundedRectangle(cornerRadius: cornerRadius)
-                            .fill(Color(AppColors.glassCard))
+                            .fill(AppColors.glassCard)
                     }
                 }
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5)
+                    .stroke(AppColors.glassCardBorder, lineWidth: 0.5)
             )
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }

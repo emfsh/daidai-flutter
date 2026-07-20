@@ -48,7 +48,7 @@ struct UserListView: View {
             Button("取消", role: .cancel) {}
             Button("删除", role: .destructive) {
                 if let user = userToDelete {
-                    Task { try? await viewModel.delete(user.id) }
+                    Swift.Task { try? await viewModel.delete(user.id) }
                 }
             }
         } message: {
@@ -59,7 +59,7 @@ struct UserListView: View {
             Button("取消", role: .cancel) { newPassword = "" }
             Button("确认") {
                 if let user = userToReset, !newPassword.isEmpty {
-                    Task { try? await viewModel.resetPassword(user.id, password: newPassword) }
+                    Swift.Task { try? await viewModel.resetPassword(user.id, password: newPassword) }
                     newPassword = ""
                 }
             }
@@ -72,13 +72,13 @@ struct UserListView: View {
         VStack(spacing: 16) {
             Image(systemName: "person.2.slash")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无用户")
                 .font(.title3)
                 .foregroundColor(.secondary)
             Button("添加用户") { showAddSheet = true }
                 .buttonStyle(.borderedProminent)
-                .tint(Color(AppColors.primary))
+                .tint(AppColors.primary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -149,7 +149,7 @@ struct UserRow: View {
             if !user.enabled {
                 Text("已禁用")
                     .font(.caption2)
-                    .foregroundColor(Color(AppColors.error))
+                    .foregroundColor(AppColors.error)
             }
         }
         .padding(.vertical, 2)
@@ -166,9 +166,9 @@ struct UserRow: View {
 
     private var roleColor: Color {
         switch user.role {
-        case "admin": return Color(AppColors.primary)
-        case "operator": return Color(AppColors.blue500)
-        default: return Color(AppColors.slate500)
+        case "admin": return AppColors.primary
+        case "operator": return AppColors.blue500
+        default: return AppColors.slate500
         }
     }
 }
@@ -243,7 +243,7 @@ struct UserFormView: View {
     }
 
     private func save() {
-        Task {
+        Swift.Task {
             do {
                 if let u = user {
                     try await viewModel.update(u.id, body: [

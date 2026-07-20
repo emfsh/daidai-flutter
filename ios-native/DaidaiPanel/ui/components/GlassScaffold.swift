@@ -49,8 +49,8 @@ struct GlassScaffold<Content: View>: View {
                 // Default gradient background for glass mode
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color(AppColors.glassBg).opacity(0.8),
-                        Color(AppColors.glassBg).opacity(0.4)
+                        AppColors.glassBg.opacity(0.8),
+                        AppColors.glassBg.opacity(0.4)
                     ]),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -69,7 +69,7 @@ struct GlassScaffold<Content: View>: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             } else {
-                Color(AppColors.glassBg)
+                AppColors.glassBg
             }
         }
     }

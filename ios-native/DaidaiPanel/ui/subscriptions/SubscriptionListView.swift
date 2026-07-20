@@ -42,7 +42,7 @@ struct SubscriptionListView: View {
             Button("取消", role: .cancel) {}
             Button("删除", role: .destructive) {
                 if let sub = subToDelete {
-                    Task { try? await viewModel.delete(sub.id) }
+                    Swift.Task { try? await viewModel.delete(sub.id) }
                 }
             }
         } message: {
@@ -59,13 +59,13 @@ struct SubscriptionListView: View {
         VStack(spacing: 16) {
             Image(systemName: "arrow.triangle.2.circlepath")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无订阅")
                 .font(.title3)
                 .foregroundColor(.secondary)
             Button("添加订阅") { showAddSheet = true }
                 .buttonStyle(.borderedProminent)
-                .tint(Color(AppColors.primary))
+                .tint(AppColors.primary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -81,23 +81,23 @@ struct SubscriptionListView: View {
                         } label: {
                             Label("删除", systemImage: "trash.fill")
                         }
-                        .tint(Color(AppColors.error))
+                        .tint(AppColors.error)
 
                         Button {
-                            Task { try? await viewModel.toggle(sub) }
+                            Swift.Task { try? await viewModel.toggle(sub) }
                         } label: {
                             Label(sub.enabled ? "禁用" : "启用",
                                   systemImage: sub.enabled ? "pause.circle.fill" : "play.circle.fill")
                         }
-                        .tint(sub.enabled ? Color(AppColors.warning) : Color(AppColors.primary))
+                        .tint(sub.enabled ? AppColors.warning : AppColors.primary)
                     }
                     .swipeActions(edge: .leading, allowsFullSwipe: false) {
                         Button {
-                            Task { try? await viewModel.pull(sub.id) }
+                            Swift.Task { try? await viewModel.pull(sub.id) }
                         } label: {
                             Label("拉取", systemImage: "arrow.down.circle.fill")
                         }
-                        .tint(Color(AppColors.blue500))
+                        .tint(AppColors.blue500)
                     }
                     .onTapGesture { editingSub = sub }
             }
@@ -123,8 +123,8 @@ struct SubscriptionCard: View {
                     .font(.caption)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
-                    .background(Color(AppColors.blue500).opacity(0.15))
-                    .foregroundColor(Color(AppColors.blue500))
+                    .background(AppColors.blue500.opacity(0.15))
+                    .foregroundColor(AppColors.blue500)
                     .clipShape(Capsule())
                 statusBadge
             }
@@ -159,9 +159,9 @@ struct SubscriptionCard: View {
     }
 
     private var statusColor: Color {
-        if sub.isRunning { return Color(AppColors.primary) }
-        if sub.enabled { return Color(AppColors.blue500) }
-        return Color(AppColors.disabled)
+        if sub.isRunning { return AppColors.primary }
+        if sub.enabled { return AppColors.blue500 }
+        return AppColors.disabled
     }
 }
 
@@ -252,7 +252,7 @@ struct SubscriptionFormView: View {
             "schedule": schedule,
             "auto_add_task": autoAddTask
         ]
-        Task {
+        Swift.Task {
             do {
                 if let sub = subscription {
                     try await viewModel.update(sub.id, body: body)

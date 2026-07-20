@@ -107,7 +107,7 @@ struct LogEntryRow: View {
             }
         }
         .padding(10)
-        .background(Color(AppColors.termBg))
+        .background(AppColors.termBg)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -126,16 +126,16 @@ struct LogEntryRow: View {
 
     private func levelColor(_ level: String) -> Color {
         switch level {
-        case "ERROR": return Color(AppColors.termRed)
-        case "WARN": return Color(AppColors.termYellow)
-        case "DEBUG": return Color(AppColors.termCyan)
-        default: return Color(AppColors.termGreen)
+        case "ERROR": return AppColors.termRed
+        case "WARN": return AppColors.termYellow
+        case "DEBUG": return AppColors.termCyan
+        default: return AppColors.termGreen
         }
     }
 
     private func parseAnsiColors(_ text: String) -> AttributedString {
         var result = AttributedString(text)
-        result.foregroundColor = Color(AppColors.termFg)
+        result.foregroundColor = AppColors.termFg
 
         let pattern = "\\x1b\\[(\\d+)m"
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return result }
@@ -143,7 +143,7 @@ struct LogEntryRow: View {
         let nsString = text as NSString
         let matches = regex.matches(in: text, range: NSRange(location: 0, length: nsString.length))
 
-        var colorStack: [Color] = [Color(AppColors.termFg)]
+        var colorStack: [Color] = [AppColors.termFg]
 
         for match in matches {
             let code = nsString.substring(with: match.range(at: 1))
@@ -151,16 +151,16 @@ struct LogEntryRow: View {
 
             if let attrRange = range.flatMap({ Range($0, in: result) }) {
                 switch code {
-                case "0": colorStack = [Color(AppColors.termFg)]
-                case "31": colorStack.append(Color(AppColors.termRed))
-                case "32": colorStack.append(Color(AppColors.termGreen))
-                case "33": colorStack.append(Color(AppColors.termYellow))
-                case "34": colorStack.append(Color(AppColors.termBlue))
-                case "35": colorStack.append(Color(AppColors.termMagenta))
-                case "36": colorStack.append(Color(AppColors.termCyan))
+                case "0": colorStack = [AppColors.termFg]
+                case "31": colorStack.append(AppColors.termRed)
+                case "32": colorStack.append(AppColors.termGreen)
+                case "33": colorStack.append(AppColors.termYellow)
+                case "34": colorStack.append(AppColors.termBlue)
+                case "35": colorStack.append(AppColors.termMagenta)
+                case "36": colorStack.append(AppColors.termCyan)
                 default: break
                 }
-                result[attrRange].foregroundColor = colorStack.last ?? Color(AppColors.termFg)
+                result[attrRange].foregroundColor = colorStack.last ?? AppColors.termFg
                 result[attrRange].backgroundColor = .clear
             }
         }

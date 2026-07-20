@@ -29,7 +29,7 @@ struct BackupView: View {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button {
-                        Task {
+                        Swift.Task {
                             do {
                                 try await viewModel.createBackup()
                             } catch {
@@ -57,7 +57,7 @@ struct BackupView: View {
             Button("取消", role: .cancel) {}
             Button("恢复", role: .destructive) {
                 if let backup = backupToRestore {
-                    Task { await restoreBackup(backup) }
+                    Swift.Task { await restoreBackup(backup) }
                 }
             }
         } message: {
@@ -67,7 +67,7 @@ struct BackupView: View {
             Button("取消", role: .cancel) {}
             Button("删除", role: .destructive) {
                 if let backup = backupToDelete {
-                    Task { try? await deleteBackup(backup) }
+                    Swift.Task { try? await deleteBackup(backup) }
                 }
             }
         } message: {
@@ -92,7 +92,7 @@ struct BackupView: View {
                             .foregroundColor(.secondary)
                         Spacer()
                         Button("查看进度") {
-                            Task { await viewModel.checkRestoreProgress() }
+                            Swift.Task { await viewModel.checkRestoreProgress() }
                         }
                         .font(.caption)
                     }
@@ -163,7 +163,7 @@ struct BackupRow: View {
         HStack(spacing: 12) {
             Image(systemName: "externaldrive.fill")
                 .font(.title2)
-                .foregroundColor(Color(AppColors.primary))
+                .foregroundColor(AppColors.primary)
                 .frame(width: 36, height: 36)
 
             VStack(alignment: .leading, spacing: 4) {

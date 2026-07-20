@@ -38,7 +38,7 @@ struct AppListTile<Trailing: View>: View {
             // Icon
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .medium))
-                .foregroundColor(Color(AppColors.primary))
+                .foregroundColor(AppColors.primary)
                 .frame(width: 24, height: 24)
             
             // Title
@@ -67,13 +67,13 @@ struct AppListTile<Trailing: View>: View {
                 } else {
                     // Classic mode with solid background
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(AppColors.glassCard))
+                        .fill(AppColors.glassCard)
                 }
             }
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(AppColors.glassCardBorder), lineWidth: 0.5)
+                .stroke(AppColors.glassCardBorder, lineWidth: 0.5)
         )
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }

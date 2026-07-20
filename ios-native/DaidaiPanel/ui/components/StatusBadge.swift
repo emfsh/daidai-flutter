@@ -10,15 +10,15 @@ enum StatusType {
     var color: Color {
         switch self {
         case .success:
-            return Color(AppColors.success)
+            return AppColors.success
         case .failed:
-            return Color(AppColors.error)
+            return AppColors.error
         case .running:
-            return Color(AppColors.primary)
+            return AppColors.primary
         case .disabled:
-            return Color(AppColors.disabled)
+            return AppColors.disabled
         case .queued:
-            return Color(AppColors.warning)
+            return AppColors.warning
         }
     }
     

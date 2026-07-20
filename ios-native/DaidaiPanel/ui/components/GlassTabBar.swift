@@ -84,11 +84,11 @@ struct GlassTabBar: View {
         return VStack(spacing: 2) {
             Image(systemName: isActive ? tab.activeIcon : tab.icon)
                 .font(.system(size: 20, weight: isActive ? .semibold : .regular))
-                .foregroundColor(isActive ? Color(AppColors.primary) : .secondary)
+                .foregroundColor(isActive ? AppColors.primary : .secondary)
             
             Text(tab.label)
                 .font(.system(size: 10, weight: isActive ? .semibold : .regular))
-                .foregroundColor(isActive ? Color(AppColors.primary) : .secondary)
+                .foregroundColor(isActive ? AppColors.primary : .secondary)
         }
     }
     
@@ -109,9 +109,9 @@ struct GlassTabBar: View {
             ]
             
             // Configure selected state
-            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color(AppColors.primary))
+            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(AppColors.primary)
             appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-                .foregroundColor: UIColor(Color(AppColors.primary)),
+                .foregroundColor: UIColor(AppColors.primary),
                 .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
             ]
         } else {
@@ -127,9 +127,9 @@ struct GlassTabBar: View {
             ]
             
             // Configure selected state
-            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color(AppColors.primary))
+            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(AppColors.primary)
             appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-                .foregroundColor: UIColor(Color(AppColors.primary)),
+                .foregroundColor: UIColor(AppColors.primary),
                 .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
             ]
         }

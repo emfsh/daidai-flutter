@@ -67,18 +67,18 @@ struct MoreView: View {
                     default:
                         Image(systemName: "person.circle.fill")
                             .font(.system(size: 44))
-                            .foregroundColor(Color(AppColors.primary).opacity(0.6))
+                            .foregroundColor(AppColors.primary.opacity(0.6))
                     }
                 }
             } else {
                 Image(systemName: "person.circle.fill")
                     .font(.system(size: 44))
-                    .foregroundColor(Color(AppColors.primary).opacity(0.6))
+                    .foregroundColor(AppColors.primary.opacity(0.6))
             }
         }
         .frame(width: 50, height: 50)
         .clipShape(Circle())
-        .overlay(Circle().stroke(Color(AppColors.glassCardBorder), lineWidth: 1))
+        .overlay(Circle().stroke(AppColors.glassCardBorder, lineWidth: 1))
     }
 
     private var roleText: String {
@@ -91,9 +91,9 @@ struct MoreView: View {
 
     private var roleColor: Color {
         switch user?.role {
-        case "admin": return Color(AppColors.primary)
-        case "operator": return Color(AppColors.blue500)
-        default: return Color(AppColors.slate500)
+        case "admin": return AppColors.primary
+        case "operator": return AppColors.blue500
+        default: return AppColors.slate500
         }
     }
 
@@ -193,17 +193,17 @@ struct MoreView: View {
                     Spacer()
                     Text("退出登录")
                         .fontWeight(.medium)
-                        .foregroundColor(Color(AppColors.error))
+                        .foregroundColor(AppColors.error)
                     Spacer()
                 }
                 .padding(.vertical, 4)
             }
-            .listRowBackground(Color(AppColors.glassCard))
+            .listRowBackground(AppColors.glassCard)
         }
         .alert("确认退出", isPresented: $showLogoutConfirm) {
             Button("取消", role: .cancel) {}
             Button("退出", role: .destructive) {
-                Task { await authViewModel.logout() }
+                Swift.Task { await authViewModel.logout() }
             }
         } message: {
             Text("确定要退出登录吗？")

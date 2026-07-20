@@ -15,7 +15,7 @@ struct EnvListView: View {
                 VStack(spacing: 0) {
                     SearchBar(text: $searchText, placeholder: "搜索环境变量...") {
                         viewModel.keyword = searchText
-                        Task { await viewModel.load() }
+                        Swift.Task { await viewModel.load() }
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
@@ -72,7 +72,7 @@ struct EnvListView: View {
     private func filterChip(label: String, value: String) -> some View {
         Button {
             viewModel.selectedGroup = value
-            Task { await viewModel.load() }
+            Swift.Task { await viewModel.load() }
         } label: {
             Text(label)
                 .font(.subheadline)
@@ -82,7 +82,7 @@ struct EnvListView: View {
                 .foregroundColor(viewModel.selectedGroup == value ? .white : .primary)
                 .background(
                     Capsule()
-                        .fill(viewModel.selectedGroup == value ? Color(AppColors.primary) : Color(AppColors.glassBg))
+                        .fill(viewModel.selectedGroup == value ? AppColors.primary : AppColors.glassBg)
                 )
         }
         .buttonStyle(.plain)
@@ -121,9 +121,9 @@ struct EnvListView: View {
                 HStack {
                     Image(systemName: "key.fill")
                         .font(.caption)
-                        .foregroundColor(Color(AppColors.primary))
+                        .foregroundColor(AppColors.primary)
                         .frame(width: 24, height: 24)
-                        .background(Color(AppColors.primary).opacity(0.1))
+                        .background(AppColors.primary.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 6))
 
                     Text(env.name)
@@ -135,9 +135,9 @@ struct EnvListView: View {
 
                     Toggle("", isOn: Binding(
                         get: { env.enabled },
-                        set: { _ in Task { try? await viewModel.toggleEnv(env) } }
+                        set: { _ in Swift.Task { try? await viewModel.toggleEnv(env) } }
                     ))
-                    .tint(Color(AppColors.primary))
+                    .tint(AppColors.primary)
                     .labelsHidden()
                     .scaleEffect(0.8)
                 }
@@ -155,7 +155,7 @@ struct EnvListView: View {
                     } label: {
                         Image(systemName: "doc.on.doc")
                             .font(.caption)
-                            .foregroundColor(Color(AppColors.primary))
+                            .foregroundColor(AppColors.primary)
                     }
                     .buttonStyle(.plain)
                 }
@@ -167,8 +167,8 @@ struct EnvListView: View {
                                 .font(.system(size: 10))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(Color(AppColors.purple100))
-                                .foregroundColor(Color(AppColors.purple600))
+                                .background(AppColors.purple100)
+                                .foregroundColor(AppColors.purple600)
                                 .clipShape(Capsule())
                         }
 
@@ -200,13 +200,13 @@ struct EnvListView: View {
             Divider()
 
             Button {
-                Task { try? await viewModel.toggleEnv(env) }
+                Swift.Task { try? await viewModel.toggleEnv(env) }
             } label: {
                 Label(env.enabled ? "禁用" : "启用", systemImage: env.enabled ? "pause.circle" : "checkmark.circle")
             }
 
             Button(role: .destructive) {
-                Task { try? await viewModel.deleteEnv(env.id) }
+                Swift.Task { try? await viewModel.deleteEnv(env.id) }
             } label: {
                 Label("删除", systemImage: "trash")
             }
@@ -218,7 +218,7 @@ struct EnvListView: View {
             Spacer()
             Image(systemName: "key.fill")
                 .font(.system(size: 48))
-                .foregroundColor(Color(AppColors.primary).opacity(0.5))
+                .foregroundColor(AppColors.primary.opacity(0.5))
             Text("暂无环境变量")
                 .font(.headline)
                 .foregroundColor(.secondary)
@@ -263,7 +263,7 @@ struct EnvFormSheet: View {
                 if let error {
                     Section {
                         Text(error)
-                            .foregroundColor(Color(AppColors.error))
+                            .foregroundColor(AppColors.error)
                             .font(.subheadline)
                     }
                 }
@@ -276,7 +276,7 @@ struct EnvFormSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
-                        Task { await save() }
+                        Swift.Task { await save() }
                     }
                     .disabled(name.isEmpty || value.isEmpty || isLoading)
                 }

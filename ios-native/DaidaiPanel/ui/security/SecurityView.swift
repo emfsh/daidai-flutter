@@ -58,7 +58,7 @@ struct SecurityView: View {
                         }
                         HStack {
                             Image(systemName: (log["success"]?.value as? Bool) == true ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundColor((log["success"]?.value as? Bool) == true ? Color(AppColors.primary) : Color(AppColors.error))
+                                .foregroundColor((log["success"]?.value as? Bool) == true ? AppColors.primary : AppColors.error)
                             Text((log["success"]?.value as? Bool) == true ? "成功" : "失败")
                                 .font(.caption)
                             Spacer()
@@ -112,19 +112,19 @@ struct SecurityView: View {
                                 .font(.caption2)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
-                                .background(Color(AppColors.primary).opacity(0.15))
-                                .foregroundColor(Color(AppColors.primary))
+                                .background(AppColors.primary.opacity(0.15))
+                                .foregroundColor(AppColors.primary)
                                 .clipShape(Capsule())
                         } else {
                             Button("踢出") {
-                                Task {
+                                Swift.Task {
                                     if let sid = session["id"]?.value as? String {
                                         try? await viewModel.kickSession(sid)
                                     }
                                 }
                             }
                             .font(.caption)
-                            .foregroundColor(Color(AppColors.error))
+                            .foregroundColor(AppColors.error)
                         }
                     }
                     .padding(.vertical, 2)
@@ -146,10 +146,10 @@ struct SecurityView: View {
                             .font(.system(.body, design: .monospaced))
                         Spacer()
                         Button {
-                            Task { try? await viewModel.removeWhitelist(ip: ip) }
+                            Swift.Task { try? await viewModel.removeWhitelist(ip: ip) }
                         } label: {
                             Image(systemName: "minus.circle.fill")
-                                .foregroundColor(Color(AppColors.error))
+                                .foregroundColor(AppColors.error)
                         }
                     }
                 }
@@ -159,7 +159,7 @@ struct SecurityView: View {
 
             Section {
                 AddIPRow { ip in
-                    Task { try? await viewModel.addWhitelist(ip: ip) }
+                    Swift.Task { try? await viewModel.addWhitelist(ip: ip) }
                 }
             } header: {
                 Text("添加 IP")
@@ -180,23 +180,23 @@ struct SecurityView: View {
                     Text("状态")
                     Spacer()
                     Text(viewModel.twoFaEnabled ? "已启用" : "未启用")
-                        .foregroundColor(viewModel.twoFaEnabled ? Color(AppColors.primary) : .secondary)
+                        .foregroundColor(viewModel.twoFaEnabled ? AppColors.primary : .secondary)
                 }
             }
 
             if viewModel.twoFaEnabled {
                 Section {
                     Button("关闭二步验证") {
-                        Task { try? await viewModel.disable2Fa() }
+                        Swift.Task { try? await viewModel.disable2Fa() }
                     }
-                    .foregroundColor(Color(AppColors.error))
+                    .foregroundColor(AppColors.error)
                 }
             } else {
                 Section {
                     Button("开启二步验证") {
-                        Task { await viewModel.setup2Fa() }
+                        Swift.Task { await viewModel.setup2Fa() }
                     }
-                    .foregroundColor(Color(AppColors.primary))
+                    .foregroundColor(AppColors.primary)
                 }
 
                 if let setup = viewModel.twoFaSetupData {
@@ -211,7 +211,7 @@ struct SecurityView: View {
                             }
                         }
                         TwoFaVerifyRow { code in
-                            Task { try? await viewModel.verify2Fa(code: code) }
+                            Swift.Task { try? await viewModel.verify2Fa(code: code) }
                         }
                     }
                 }
@@ -253,7 +253,7 @@ struct SecurityView: View {
                         if let time = log["created_at"]?.value as? String {
                             Text(time)
                                 .font(.caption2)
-                                .foregroundColor(Color(AppColors.slate400))
+                                .foregroundColor(AppColors.slate400)
                         }
                     }
                     .padding(.vertical, 4)
@@ -283,7 +283,7 @@ struct AddIPRow: View {
                 ip = ""
             }
             .disabled(ip.isEmpty)
-            .foregroundColor(Color(AppColors.primary))
+            .foregroundColor(AppColors.primary)
         }
     }
 }
@@ -306,7 +306,7 @@ struct TwoFaVerifyRow: View {
                 code = ""
             }
             .disabled(code.count < 6)
-            .foregroundColor(Color(AppColors.primary))
+            .foregroundColor(AppColors.primary)
         }
     }
 }

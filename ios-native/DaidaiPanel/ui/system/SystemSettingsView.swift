@@ -92,7 +92,7 @@ struct SystemSettingsView: View {
     private var updateSection: some View {
         Section {
             Button {
-                Task {
+                Swift.Task {
                     do {
                         let response: ApiResponse<UpdateData> = try await apiService.checkUpdate()
                         if let data = response.data, data.hasUpdate == true {
@@ -124,7 +124,7 @@ struct SystemSettingsView: View {
     }
 
     private func save() {
-        Task {
+        Swift.Task {
             do {
                 try await viewModel.saveSettings([
                     "concurrent_tasks": concurrentTasks,

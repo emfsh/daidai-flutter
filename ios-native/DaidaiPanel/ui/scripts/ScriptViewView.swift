@@ -60,7 +60,7 @@ struct ScriptViewView: View {
     private var toolbarView: some View {
         HStack(spacing: 16) {
             Button {
-                Task { await viewModel.format() }
+                Swift.Task { await viewModel.format() }
                 editedContent = viewModel.fileContent
             } label: {
                 Label("格式化", systemImage: "text.alignleft")
@@ -68,25 +68,25 @@ struct ScriptViewView: View {
             }
 
             Button {
-                Task { await viewModel.run(path: filePath) }
+                Swift.Task { await viewModel.run(path: filePath) }
                 showRunOutput = true
             } label: {
                 Label("运行", systemImage: "play.fill")
                     .font(.caption)
             }
-            .foregroundColor(Color(AppColors.primary))
+            .foregroundColor(AppColors.primary)
 
             Spacer()
 
             if hasUnsavedChanges {
                 Text("未保存")
                     .font(.caption2)
-                    .foregroundColor(Color(AppColors.warning))
+                    .foregroundColor(AppColors.warning)
             }
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color(AppColors.glassCard))
+        .background(AppColors.glassCard)
     }
 
     // MARK: - Editor
@@ -121,13 +121,13 @@ struct ScriptViewView: View {
             }
         }
         .padding()
-        .background(Color(AppColors.termBg))
+        .background(AppColors.termBg)
         .frame(maxHeight: 200)
     }
 
     private func save() {
         viewModel.fileContent = editedContent
-        Task {
+        Swift.Task {
             await viewModel.save()
             hasUnsavedChanges = false
         }

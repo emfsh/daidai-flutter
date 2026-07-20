@@ -55,7 +55,7 @@ struct DepListView: View {
                 installVersion = ""
             }
             Button("安装") {
-                Task {
+                Swift.Task {
                     try? await viewModel.install(name: installName, version: installVersion)
                     installName = ""
                     installVersion = ""
@@ -68,7 +68,7 @@ struct DepListView: View {
             Button("取消", role: .cancel) {}
             Button("卸载", role: .destructive) {
                 if let dep = depToUninstall {
-                    Task { try? await viewModel.uninstall(dep.id) }
+                    Swift.Task { try? await viewModel.uninstall(dep.id) }
                 }
             }
         } message: {
@@ -101,15 +101,15 @@ struct DepListView: View {
                             } label: {
                                 Label("卸载", systemImage: "trash.fill")
                             }
-                            .tint(Color(AppColors.error))
+                            .tint(AppColors.error)
                             .disabled(dep.isBusy)
 
                             Button {
-                                Task { try? await viewModel.reinstall(dep.id) }
+                                Swift.Task { try? await viewModel.reinstall(dep.id) }
                             } label: {
                                 Label("重装", systemImage: "arrow.clockwise")
                             }
-                            .tint(Color(AppColors.blue500))
+                            .tint(AppColors.blue500)
                             .disabled(dep.isBusy)
                         }
                 }
@@ -123,13 +123,13 @@ struct DepListView: View {
         Section("Python 运行时") {
             HStack {
                 Image(systemName: "terminal.fill")
-                    .foregroundColor(Color(AppColors.primary))
+                    .foregroundColor(AppColors.primary)
                 Text("Python 环境管理")
                     .font(.subheadline)
                 Spacer()
                 Text("查看")
                     .font(.caption)
-                    .foregroundColor(Color(AppColors.blue500))
+                    .foregroundColor(AppColors.blue500)
             }
             .padding(.vertical, 4)
         }
@@ -145,9 +145,9 @@ struct DepRow: View {
         HStack(spacing: 12) {
             Image(systemName: dep.type == "nodejs" ? "cube.fill" : "text.word.spacing")
                 .font(.title3)
-                .foregroundColor(dep.isInstalled ? Color(AppColors.primary) : Color(AppColors.disabled))
+                .foregroundColor(dep.isInstalled ? AppColors.primary : AppColors.disabled)
                 .frame(width: 36, height: 36)
-                .background((dep.isInstalled ? Color(AppColors.primary) : Color(AppColors.disabled)).opacity(0.1))
+                .background((dep.isInstalled ? AppColors.primary : AppColors.disabled).opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {

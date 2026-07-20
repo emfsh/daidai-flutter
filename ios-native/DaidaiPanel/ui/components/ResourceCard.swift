@@ -28,7 +28,7 @@ struct ResourceCard: View {
                     // Background circle
                     Circle()
                         .stroke(
-                            Color(AppColors.glassCardBorder),
+                            AppColors.glassCardBorder,
                             lineWidth: lineWidth
                         )
                     
@@ -70,13 +70,13 @@ struct ResourceCard: View {
     private var progressColor: Color {
         if percentage < 60 {
             // Green for low usage
-            return Color(AppColors.success)
+            return AppColors.success
         } else if percentage < 80 {
             // Yellow for medium usage
-            return Color(AppColors.warning)
+            return AppColors.warning
         } else {
             // Red for high usage
-            return Color(AppColors.error)
+            return AppColors.error
         }
     }
 }
