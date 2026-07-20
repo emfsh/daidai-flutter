@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 
-/// 全局背景组件，为所有页面提供统一的背景图片和模糊效果
+/// 页面级背景组件，为二级/三级页面提供背景图片和模糊效果
+/// 主页面由 MainScaffold 的 GlassScaffold 处理，不需要此组件
 class AppBackground extends ConsumerWidget {
   final Widget child;
 
@@ -30,15 +30,16 @@ class AppBackground extends ConsumerWidget {
           ),
         ),
         // 模糊层
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: settings.blurIntensity,
-              sigmaY: settings.blurIntensity,
+        if (settings.blurIntensity > 0)
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: settings.blurIntensity,
+                sigmaY: settings.blurIntensity,
+              ),
+              child: Container(color: Colors.black.withAlpha(15)),
             ),
-            child: Container(color: Colors.black.withAlpha(15)),
           ),
-        ),
         // 内容层
         Positioned.fill(child: child),
       ],

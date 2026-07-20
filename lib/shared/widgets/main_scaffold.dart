@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -216,28 +217,72 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     final idx = _currentIndex(context);
     final settings = ref.watch(appStyleProvider);
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final hasBg = settings.backgroundImagePath != null &&
+        settings.backgroundImagePath!.isNotEmpty;
 
     return PopScope<void>(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) => _handleBackPress(didPop),
       child: settings.glassMode
-          ? _buildGlassMode(idx)
-          : _buildClassicMode(idx, isLight),
+          ? _buildGlassMode(idx, hasBg, settings)
+          : _buildClassicMode(idx, isLight, hasBg, settings),
     );
   }
 
-  /// 液态玻璃模式：GlassScaffold
-  Widget _buildGlassMode(int idx) {
+  /// 液态玻璃模式：GlassScaffold，背景图传入 background 参数
+  Widget _buildGlassMode(int idx, bool hasBg, AppStyleSettings settings) {
+    Widget? bgWidget;
+    if (hasBg) {
+      bgWidget = Image.file(
+        File(settings.backgroundImagePath!),
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      );
+    }
+
     return GlassScaffold(
+      background: bgWidget,
       body: widget.child,
       bottomBar: _buildGlassBottomBar(idx),
     );
   }
 
-  /// 经典模式：普通 Scaffold
-  Widget _buildClassicMode(int idx, bool isLight) {
+  /// 经典模式：普通 Scaffold + 模糊背景
+  Widget _buildClassicMode(
+      int idx, bool isLight, bool hasBg, AppStyleSettings settings) {
+    if (hasBg) {
+      return Stack(
+        children: [
+          // 背景图
+          Positioned.fill(
+            child: Image.file(
+              File(settings.backgroundImagePath!),
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+          ),
+          // 模糊层
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: settings.blurIntensity,
+                sigmaY: settings.blurIntensity,
+              ),
+              child: Container(color: Colors.black.withAlpha(15)),
+            ),
+          ),
+          // 内容
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            body: widget.child,
+            extendBody: true,
+            bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: widget.child,
       extendBody: true,
       bottomNavigationBar: _buildClassicBottomBar(idx, isLight),
