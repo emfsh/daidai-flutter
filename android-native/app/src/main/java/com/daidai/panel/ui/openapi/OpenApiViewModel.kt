@@ -2,6 +2,7 @@ package com.daidai.panel.ui.openapi
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.daidai.panel.core.network.ApiEndpoints
 import com.daidai.panel.core.network.NetworkModule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -102,7 +103,7 @@ class OpenApiViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.enableOpenApiApp(mapOf("id" to id))
+                api.enableOpenApiApp(ApiEndpoints.openApiAppEnable(id))
                 load()
             } catch (_: Exception) {}
         }
@@ -112,7 +113,7 @@ class OpenApiViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.disableOpenApiApp(mapOf("id" to id))
+                api.disableOpenApiApp(ApiEndpoints.openApiAppDisable(id))
                 load()
             } catch (_: Exception) {}
         }
@@ -122,7 +123,7 @@ class OpenApiViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.resetOpenApiAppSecret(mapOf("id" to id))
+                api.resetOpenApiAppSecret(ApiEndpoints.openApiAppResetSecret(id))
                 load()
             } catch (_: Exception) {}
         }
@@ -132,7 +133,7 @@ class OpenApiViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                val response = api.viewOpenApiAppSecret(mapOf("id" to id))
+                val response = api.viewOpenApiAppSecret(ApiEndpoints.openApiAppViewSecret(id))
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     _state.value = _state.value.copy(
                         secret = response.body()?.data?.get("secret") as? String
@@ -146,7 +147,7 @@ class OpenApiViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                val response = api.getOpenApiAppLogs(mapOf("app_id" to appId.toString()))
+                val response = api.getOpenApiAppLogs(ApiEndpoints.openApiAppLogs(appId))
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     @Suppress("UNCHECKED_CAST")
                     _state.value = _state.value.copy(

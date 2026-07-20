@@ -2,6 +2,7 @@ package com.daidai.panel.ui.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.daidai.panel.core.network.ApiEndpoints
 import com.daidai.panel.core.network.NetworkModule
 import com.daidai.panel.data.model.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -124,7 +125,7 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.runTask(mapOf("task_id" to taskId))
+                api.runTask(ApiEndpoints.taskRun(taskId))
                 load()
             } catch (_: Exception) {}
         }
@@ -134,7 +135,7 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.stopTask(mapOf("task_id" to taskId))
+                api.stopTask(ApiEndpoints.taskStop(taskId))
                 load()
             } catch (_: Exception) {}
         }
@@ -144,7 +145,7 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.enableTask(mapOf("task_id" to taskId))
+                api.enableTask(ApiEndpoints.taskEnable(taskId))
                 load()
             } catch (_: Exception) {}
         }
@@ -154,7 +155,7 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.disableTask(mapOf("task_id" to taskId))
+                api.disableTask(ApiEndpoints.taskDisable(taskId))
                 load()
             } catch (_: Exception) {}
         }

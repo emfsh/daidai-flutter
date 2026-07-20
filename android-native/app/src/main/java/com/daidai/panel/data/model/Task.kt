@@ -1,6 +1,26 @@
 package com.daidai.panel.data.model
 
+import com.google.gson.*
 import com.google.gson.annotations.SerializedName
+import com.google.gson.annotations.JsonAdapter
+import java.lang.reflect.Type
+
+class LabelsDeserializer : JsonDeserializer<String> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): String {
+        return when {
+            json.isJsonArray -> {
+                val list = json.asJsonArray.mapNotNull { it.asStringOrNull() }
+                list.joinToString(",")
+            }
+            json.isJsonPrimitive -> json.asString
+            else -> ""
+        }
+    }
+
+    private fun JsonElement.asStringOrNull(): String? = try {
+        if (isJsonPrimitive) asString else null
+    } catch (_: Exception) { null }
+}
 
 data class Task(
     @SerializedName("id") val id: Int = 0,
@@ -11,7 +31,7 @@ data class Task(
     @SerializedName("task_type") val taskType: Int = 0,
     @SerializedName("python_version") val pythonVersion: String = "",
     @SerializedName("status") val status: Int = 0,
-    @SerializedName("labels") val labels: String = "",
+    @SerializedName("labels") @JsonAdapter(LabelsDeserializer::class) val labels: String = "",
     @SerializedName("display_labels") val displayLabels: List<String> = emptyList(),
     @SerializedName("last_run_at") val lastRunAt: String = "",
     @SerializedName("next_run_at") val nextRunAt: String = "",

@@ -2,6 +2,7 @@ package com.daidai.panel.ui.subscriptions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.daidai.panel.core.network.ApiEndpoints
 import com.daidai.panel.core.network.NetworkModule
 import com.daidai.panel.data.model.Subscription
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -111,7 +112,7 @@ class SubscriptionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.enableSubscription(mapOf("id" to id))
+                api.enableSubscription(ApiEndpoints.subscriptionEnable(id))
                 load()
             } catch (_: Exception) {}
         }
@@ -121,7 +122,7 @@ class SubscriptionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.disableSubscription(mapOf("id" to id))
+                api.disableSubscription(ApiEndpoints.subscriptionDisable(id))
                 load()
             } catch (_: Exception) {}
         }
@@ -131,7 +132,7 @@ class SubscriptionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.pullSubscription(mapOf("id" to id))
+                api.pullSubscription(ApiEndpoints.subscriptionPull(id))
                 load()
             } catch (_: Exception) {}
         }
@@ -141,7 +142,7 @@ class SubscriptionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val api = networkModule.getApiService()
-                api.stopPullSubscription(mapOf("id" to id))
+                api.stopPullSubscription(ApiEndpoints.subscriptionPullStop(id))
                 load()
             } catch (_: Exception) {}
         }
