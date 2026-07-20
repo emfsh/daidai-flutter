@@ -1745,8 +1745,9 @@ class _TaskListItem extends StatelessWidget {
                     active: !task.isDisabled,
                   ),
                   const SizedBox(width: 8),
+                  // ✅ 关键修复：使用 task.command 而非 task.cron
                   _MetaChip(
-                    label: task.cron,
+                    label: task.command,
                     active: true,
                   ),
                   const Spacer(),
