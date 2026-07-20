@@ -593,7 +593,8 @@ class _ScriptListPageState extends ConsumerState<ScriptListPage> {
     final visibleTree = _sortScriptTree(_filterTree(state.tree, state.keyword));
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      // 🌟 核心修复：强制使用主题背景色，彻底告别浅色模式下的纯黑底
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
       body: Padding(
         padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 12),
         child: Column(
