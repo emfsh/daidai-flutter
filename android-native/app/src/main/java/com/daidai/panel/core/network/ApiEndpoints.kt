@@ -12,7 +12,7 @@ object ApiEndpoints {
     const val AUTH_CAPTCHA_CONFIG = "/api/auth/captcha-config"
 
     // System
-    const val SYSTEM_HEALTH = "/api/system/health"
+    const val SYSTEM_HEALTH = "/api/v1/health"
     const val SYSTEM_VERSION = "/api/system/version"
     const val SYSTEM_INFO = "/api/system/info"
     const val SYSTEM_DASHBOARD = "/api/system/dashboard"
