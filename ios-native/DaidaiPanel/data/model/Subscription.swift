@@ -121,8 +121,9 @@ private extension KeyedDecodingContainer {
     }
 
     func decodeIntIfPresent(forKey key: Key) throws -> Int? {
-        if let v = try? decode(Int?.self, forKey: key) { return v }
-        if let v = try? decode(Double?.self, forKey: key) { return v.map { Int($0) } }
+        if let v = try decodeIfPresent(Int.self, forKey: key) { return v }
+        if let v = try decodeIfPresent(Double.self, forKey: key) { return Int(v) }
+        if let s = try decodeIfPresent(String.self, forKey: key), let v = Int(s) { return v }
         return nil
     }
 
