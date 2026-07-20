@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Refresh
@@ -308,8 +309,8 @@ private fun getChannelIcon(type: String): ImageVector {
     }
 }
 
-private val Icons.Default.WeChat: ImageVector
-    get() = Icons.Default.Notifications
+private val Icons.Filled.WeChat: ImageVector
+    get() = Icons.Filled.Notifications
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable

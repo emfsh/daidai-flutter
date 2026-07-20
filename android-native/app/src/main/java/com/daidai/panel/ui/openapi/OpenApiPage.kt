@@ -419,6 +419,7 @@ private fun OpenApiAppCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreateAppSheet(
     onDismiss: () -> Unit,

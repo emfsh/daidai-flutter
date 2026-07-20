@@ -427,6 +427,7 @@ private fun DepCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun InstallDepSheet(
     selectedTab: Int,

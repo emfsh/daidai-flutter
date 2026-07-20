@@ -333,6 +333,7 @@ private fun UserCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddUserSheet(
     onDismiss: () -> Unit,

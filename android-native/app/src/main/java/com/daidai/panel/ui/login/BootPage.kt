@@ -63,6 +63,7 @@ fun BootPage(
             is BootState.Authenticated -> onNavigateToMain()
             is BootState.NeedLogin -> onNavigateToLogin()
             is BootState.Loading -> {}
+            is BootState.Error -> {}
         }
     }
 

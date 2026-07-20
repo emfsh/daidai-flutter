@@ -15,7 +15,7 @@ data class SecurityState(
     val sessions: List<Map<String, Any>> = emptyList(),
     val ipWhitelist: List<Map<String, Any>> = emptyList(),
     val twoFaStatus: Map<String, Any> = emptyMap(),
-    val auditLogs: List<Map<String, Any>> = emptyMap(),
+    val auditLogs: List<Map<String, Any>> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val selectedTab: Int = 0,

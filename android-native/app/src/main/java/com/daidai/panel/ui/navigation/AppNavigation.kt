@@ -1,5 +1,8 @@
 package com.daidai.panel.ui.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -231,8 +234,8 @@ fun AppNavigation(
 
 @Composable
 private fun PlaceholderPage(title: String) {
-    androidx.compose.foundation.layout.Box(
-        modifier = androidx.compose.foundation.layout.fillMaxSize(),
+    Box(
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = androidx.compose.ui.Alignment.Center
     ) {
         androidx.compose.material3.Text(

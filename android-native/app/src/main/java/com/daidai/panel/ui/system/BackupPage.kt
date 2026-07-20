@@ -300,6 +300,7 @@ private fun BackupCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RestoreSheet(
     backupName: String,

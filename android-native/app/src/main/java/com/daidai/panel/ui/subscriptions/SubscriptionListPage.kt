@@ -25,7 +25,8 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.GitHub
+import androidx.compose.material3.FilterChip
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.MoreVert
@@ -264,7 +265,7 @@ private fun SubscriptionCard(
                 }
 
                 Icon(
-                    if (subscription.isGitRepo) Icons.Default.GitHub else Icons.Default.InsertDriveFile,
+                    if (subscription.isGitRepo) Icons.Default.Code else Icons.Default.InsertDriveFile,
                     contentDescription = null,
                     tint = AppColors.primary,
                     modifier = Modifier.size(20.dp)
